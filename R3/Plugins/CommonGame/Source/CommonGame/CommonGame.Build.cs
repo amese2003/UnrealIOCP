@@ -1,0 +1,39 @@
+using UnrealBuildTool;
+
+public class CommonGame : ModuleRules
+{
+    public CommonGame(ReadOnlyTargetRules Target) : base(Target)
+    {
+        PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Core",
+                "CoreUObject",
+                "Engine",
+                "Slate",
+                "SlateCore",
+                "UMG",
+                "CommonUI",
+                "CommonUser",
+                "GameplayTags",
+                "ModularGameplayActors",
+            }
+        );
+
+        PrivateDependencyModuleNames.AddRange(
+            new string[]
+            {
+
+            }
+        );
+
+        DynamicallyLoadedModuleNames.AddRange(
+            new string[]
+            {
+
+            }
+        );
+    }
+}
