@@ -10,8 +10,10 @@
 #include "R3/Camera/R3CameraComponent.h"
 #include "R3/Input/R3MappableConfigPair.h"
 #include "R3/Input/R3InputComponent.h"
+#include "R3/Character/R3Character.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "GameFramework/CharacterMovementComponent.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3HeroComponent)
 
 /** FeatureName Á¤ÀÇ */
@@ -340,10 +342,25 @@ void UR3HeroComponent::InputAbilityInputTagReleased(FGameplayTag InputTag)
 {
 }
 
-void UR3HeroComponent::Input_SocketMove(FVector2d Value)
+void UR3HeroComponent::Input_SocketMove(float deltaTime, FVector2d Value)
 {
 	AR3Character* Pawn = GetPawn<AR3Character>();
+	FVector PawnLocation = Pawn->GetActorLocation();
+
 	const FRotator MovementRotation(0.f, Pawn->GetPosInfo()->yaw(), 0.f);
+
+	const FVector NewLocation(Pawn->GetPosInfo()->x(), Pawn->GetPosInfo()->y(), Pawn->GetPosInfo()->z());
+
+	FVector Direction = (NewLocation - PawnLocation);
+	float DistanceQuad = Direction.SizeSquared();
+	Direction = Direction.GetSafeNormal();
+
+	FVector desireLocation = PawnLocation + (Direction * Pawn->GetCharacterMovement()->GetMaxSpeed() * deltaTime);
+
+	if (DistanceQuad > 9.f)
+		Pawn->SetActorLocation(desireLocation);
+
+	Pawn->SetActorRotation(MovementRotation);
 
 	const Protocol::MoveState State = Pawn->GetDestMoveState();
 
@@ -356,11 +373,11 @@ void UR3HeroComponent::Input_SocketMove(FVector2d Value)
 		MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
 		Pawn->AddMovementInput(MovementDirection, Value.Y);*/
 
-		Pawn->SetActorRotation(MovementRotation);
-		Pawn->AddMovementInput(Pawn->GetActorForwardVector());
+		//Pawn->SetActorRotation(MovementRotation);
+		//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
+		
 	}
 	else
 	{
-
 	}
 }

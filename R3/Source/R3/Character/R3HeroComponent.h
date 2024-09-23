@@ -62,7 +62,7 @@ public:
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void InputAbilityInputTagReleased(FGameplayTag InputTag);
 
-	void Input_SocketMove(FVector2d Value);
+	void Input_SocketMove(float deltaTime, FVector2d Value);
 	/**
 	*	Member Variable
 	*/

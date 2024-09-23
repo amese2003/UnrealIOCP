@@ -68,7 +68,8 @@ void AR3Character::InitializePosition()
 
 void AR3Character::SetPosInfo(const Protocol::PosInfo& info)
 {
-	PosInfo->CopyFrom(info);
+	if (PosInfo != nullptr)
+		PosInfo->CopyFrom(info);
 }
 
 void AR3Character::SetMoveState(Protocol::MoveState State)

@@ -101,7 +101,7 @@ void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
 		return;
 
 	UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
-	heroComponent->Input_SocketMove(LastDesiredInput);
+	heroComponent->Input_SocketMove(DeltaTime, LastDesiredInput);
 
 	UE_LOG(LogR3, Error, TEXT("Object id : %d. x : %f"), character->GetPosInfo()->object_id(), character->GetPosInfo()->x());
 	

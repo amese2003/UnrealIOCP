@@ -93,8 +93,10 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosI
 
 	if (PC)
 	{
-		AR3Character* character = PC->GetPawn<AR3Character>();
-		character->SetPosInfo(Info);
+		if (AR3Character* character = PC->GetPawn<AR3Character>())
+		{
+			character->SetPosInfo(Info);
+		}
 	}
 
 
@@ -102,8 +104,11 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosI
 	
 	if (SPC)
 	{
-		AR3Character* character = SPC->GetPawn<AR3Character>();
-		character->SetPosInfo(Info);
+		if (AR3Character* character = SPC->GetPawn<AR3Character>())
+		{
+			character->SetPosInfo(Info);
+		}
+		
 	}
 }
 
