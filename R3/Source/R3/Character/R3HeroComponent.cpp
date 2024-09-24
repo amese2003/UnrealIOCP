@@ -13,7 +13,9 @@
 #include "R3/Character/R3Character.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "UserSettings/EnhancedInputUserSettings.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "InputMappingContext.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3HeroComponent)
 
 /** FeatureName 정의 */
@@ -235,17 +237,36 @@ void UR3HeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			{
 				const FR3GameplayTags& GameplayTags = FR3GameplayTags::Get();
 
-				// HeroComponent 가지고 있는 Input Mapping Context를 순회하며, EnhancedInputLocalPlayerSubsystem에 추가해준다
-				for (const FR3MappableConfigPair& Pair : DefaultInputConfigs)
-				{
-					if (Pair.bShouldActivateAutomatically)
-					{
-						FModifyContextOptions Options = {};
-						Options.bIgnoreAllPressedKeysUntilRelease = false;
+				//// HeroComponent 가지고 있는 Input Mapping Context를 순회하며, EnhancedInputLocalPlayerSubsystem에 추가해준다
+				//for (const FR3MappableConfigPair& Pair : DefaultInputConfigs)
+				//{
+				//	if (Pair.bShouldActivateAutomatically)
+				//	{
+				//		FModifyContextOptions Options = {};
+				//		Options.bIgnoreAllPressedKeysUntilRelease = false;
 
-						// 내부적으로 InputMappingContext에 추가한다
-						//	- AddPlayerMappableConfig를 간단히 봐야됨
-						SubSystem->AddPlayerMappableConfig(Pair.Config.LoadSynchronous(), Options);
+				//		// 내부적으로 InputMappingContext에 추가한다
+				//		//	- AddPlayerMappableConfig를 간단히 봐야됨
+				//		SubSystem->AddPlayerMappableConfig(Pair.Config.LoadSynchronous(), Options);
+				//	}
+				//}
+
+				for (const FInputMappingContextAndPriority& Mapping : DefaultInputMappings)
+				{
+					if (UInputMappingContext* IMC = Mapping.InputMapping.LoadSynchronous())
+					{
+						if (Mapping.bRegisterWithSettings)
+						{
+							if (UEnhancedInputUserSettings* Settings = SubSystem->GetUserSettings())
+							{
+								Settings->RegisterInputMappingContext(IMC);
+							}
+
+							FModifyContextOptions Options = {};
+							Options.bIgnoreAllPressedKeysUntilRelease = false;
+							// Actually add the config to the local player							
+							SubSystem->AddMappingContext(IMC, Mapping.Priority, Options);
+						}
 					}
 				}
 
@@ -265,8 +286,44 @@ void UR3HeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 	}
 
 	// GameFeatureAction_AddInputConfig의 HandlePawnExtension 콜백 함수 지정
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
 
+}
+void UR3HeroComponent::AddAdditionalInputConfig(const UR3InputConfig* InputConfig)
+{
+	TArray<uint32> BindHandles;
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const ULocalPlayer* LP = PC->GetLocalPlayer();
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	if (const UR3PawnExtensionComponent* PawnExtComp = UR3PawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		UR3InputComponent* R3IC = Pawn->FindComponentByClass<UR3InputComponent>();
+		if (ensureMsgf(R3IC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to ULyraInputComponent or a subclass of it.")))
+		{
+			//R3IC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+		}
+	}
+}
+void UR3HeroComponent::RemoveAdditionalInputConfig(const UR3InputConfig* InputConfig)
+{
+}
+bool UR3HeroComponent::IsReadyToBindInputs() const
+{
+	return false;
 }
 PRAGMA_ENABLE_OPTIMIZATION
 
@@ -359,6 +416,8 @@ void UR3HeroComponent::Input_SocketMove(float deltaTime, FVector2d Value)
 
 	if (DistanceQuad > 9.f)
 		Pawn->SetActorLocation(desireLocation);
+	else
+		Pawn->SetActorLocation(NewLocation);
 
 	Pawn->SetActorRotation(MovementRotation);
 

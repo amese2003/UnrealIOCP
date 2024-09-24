@@ -2,6 +2,7 @@
 
 #include "Components/PawnComponent.h"
 #include "Components/GameFrameworkInitStateInterface.h"
+#include "R3/GameFeatures/GameFeatureAction_AddInputContextMapping.h"
 #include "R3HeroComponent.generated.h"
 
 // 전방선언
@@ -10,7 +11,7 @@ template<class TClass> class TSubclassOf;
 struct FR3MappableConfigPair;
 struct FInputActionValue;
 class UInputComponent;
-
+class UR3InputConfig;
 
 /**
 *	component that sets up input and camera handling for player controlled pawns (or bots that simulate player)
@@ -57,6 +58,10 @@ public:
 	TSubclassOf<UR3CameraMode> DetermineCameraMode() const;
 	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 
+	void AddAdditionalInputConfig(const UR3InputConfig* InputConfig);
+	void RemoveAdditionalInputConfig(const UR3InputConfig* InputConfig);
+	bool IsReadyToBindInputs() const;
+
 	void Input_Move(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
@@ -69,7 +74,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<FR3MappableConfigPair> DefaultInputConfigs;
 
+	UPROPERTY(EditAnywhere)
+		TArray<FInputMappingContextAndPriority> DefaultInputMappings;
 
+	bool bReadyToBindInputs;
 	
 
 };
