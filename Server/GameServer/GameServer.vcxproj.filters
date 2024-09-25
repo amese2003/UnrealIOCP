@@ -75,6 +75,9 @@
     <ClCompile Include="GameMap.cpp">
       <Filter>Content</Filter>
     </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Content\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="GameMap.h">
       <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Content\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

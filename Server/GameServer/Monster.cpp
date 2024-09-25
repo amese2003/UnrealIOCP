@@ -15,6 +15,10 @@ Monster::~Monster()
 
 void Monster::Update()
 {
+	if (GetRoom().lock() != nullptr)
+	{
+		GetRoom().lock()->DoTimer(200, Update);
+	}
 }
 
 void Monster::Move()

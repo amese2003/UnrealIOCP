@@ -12,3 +12,16 @@ GameObject::~GameObject()
 {
 	delete _objectInfo;
 }
+
+void GameObject::SetRoom(weak_ptr<Room> targetRoom)
+{
+	_room.store(targetRoom);
+}
+
+weak_ptr<Room> GameObject::GetRoom()
+{
+	if (_room.load().lock() != nullptr)
+		return _room;
+
+	return weak_ptr<Room>();
+}

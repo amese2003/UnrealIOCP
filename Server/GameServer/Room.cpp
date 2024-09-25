@@ -26,6 +26,11 @@ void Room::UpdateTick()
 	DoTimer(100, &Room::UpdateTick);
 }
 
+RoomRef Room::GetRoomRef()
+{
+	return static_pointer_cast<Room>(shared_from_this());
+}
+
 
 
 bool Room::HandleEnterPlayer(PlayerRef player)
@@ -152,12 +157,21 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 	}
 }
 
-
-
-RoomRef Room::GetRoomRef()
+int Room::GetObjectTypes(GameObjectRef object)
 {
-	return static_pointer_cast<Room>(shared_from_this());
+	if (object)
+	{
+		if (Protocol::ObjectInfo* targetInfo = object->_objectInfo)
+		{
+			uint64 objectid =  targetInfo->object_id();
+			return objectid >> 24;
+		}
+	}
+
+	// Invalid
+	return 0;
 }
+
 
 void Room::Broadcast(SendBufferRef sendBuffer, uint64 exceptId)
 {
@@ -185,7 +199,7 @@ bool Room::AddObject(GameObjectRef player)
 
 
 	_players.insert(make_pair(player->_objectInfo->object_id(), player));
-	player->_room.store(GetRoomRef());
+	player->SetRoom(GetRoomRef());
 
 	return true;
 }
@@ -197,7 +211,7 @@ bool Room::RemoveObject(uint64 objectId)
 		return false;
 
 	GameObjectRef player = _players[objectId];
-	player->_room.store(weak_ptr<Room>());
+	player->SetRoom(weak_ptr<Room>());
 
 	_players.erase(objectId);
 

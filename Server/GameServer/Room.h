@@ -20,6 +20,8 @@ public:
 	bool HandleLeavePlayer(PlayerRef player);
 	void HandleMove(Protocol::C_MOVE pkt);
 
+	int GetObjectTypes(GameObjectRef object);
+
 
 
 	void UpdateTick();

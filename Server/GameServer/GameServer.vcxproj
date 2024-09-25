@@ -158,6 +158,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectUtils.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="GameSession.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="ObjectUtils.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="GameSession.h" />
     <ClInclude Include="GameSessionManager.h" />

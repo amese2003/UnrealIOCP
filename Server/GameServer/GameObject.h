@@ -7,6 +7,8 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
+	virtual void SetRoom(weak_ptr<Room> targetRoom);
+	weak_ptr<Room> GetRoom();
 
 public:
 	Protocol::ObjectInfo* _objectInfo;
