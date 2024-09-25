@@ -19,7 +19,6 @@
 
 #define LOCTEXT_NAMESPACE "GameFeatures"
 
-PRAGMA_DISABLE_OPTIMIZATION
 void UGameFeatureAction_AddInputContextMapping::OnGameFeatureRegistering()
 {
 	Super::OnGameFeatureRegistering();
@@ -278,5 +277,4 @@ void UGameFeatureAction_AddInputContextMapping::RemoveInputMapping(APlayerContro
 
 	ActiveData.ControllersAddedTo.Remove(PlayerController);
 }
-PRAGMA_ENABLE_OPTIMIZATION
 #undef LOCTEXT_NAMESPACE

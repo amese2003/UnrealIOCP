@@ -79,7 +79,7 @@ void UR3HeroComponent::CheckDefaultInitialization()
 	static const TArray<FGameplayTag> StateChain = { InitTags.InitState_Spawned, InitTags.InitState_DataAvailable, InitTags.InitState_DataInitialized, InitTags.InitState_GameplayReady };
 	ContinueInitStateChain(StateChain);
 }
-PRAGMA_DISABLE_OPTIMIZATION
+
 void UR3HeroComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
 {
 	const FR3GameplayTags& InitTags = FR3GameplayTags::Get();
@@ -94,7 +94,7 @@ void UR3HeroComponent::OnActorInitStateChanged(const FActorInitStateChangedParam
 		}
 	}
 }
-PRAGMA_ENABLE_OPTIMIZATION
+
 bool UR3HeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
 {
 	check(Manager);
@@ -202,7 +202,6 @@ TSubclassOf<UR3CameraMode> UR3HeroComponent::DetermineCameraMode() const
 	return nullptr;
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void UR3HeroComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
@@ -325,7 +324,6 @@ bool UR3HeroComponent::IsReadyToBindInputs() const
 {
 	return false;
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void UR3HeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
@@ -399,7 +397,7 @@ void UR3HeroComponent::InputAbilityInputTagReleased(FGameplayTag InputTag)
 {
 }
 
-void UR3HeroComponent::Input_SocketMove(float deltaTime, FVector2d Value)
+void UR3HeroComponent::Input_SocketMove(float deltaTime)
 {
 	AR3Character* Pawn = GetPawn<AR3Character>();
 	FVector PawnLocation = Pawn->GetActorLocation();
@@ -414,12 +412,30 @@ void UR3HeroComponent::Input_SocketMove(float deltaTime, FVector2d Value)
 
 	FVector desireLocation = PawnLocation + (Direction * Pawn->GetCharacterMovement()->GetMaxSpeed() * deltaTime);
 
-	if (DistanceQuad > 9.f)
-		Pawn->SetActorLocation(desireLocation);
-	else
-		Pawn->SetActorLocation(NewLocation);
-
 	Pawn->SetActorRotation(MovementRotation);
+	if (DistanceQuad > 100.f)
+	{
+		/*FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+		Pawn->AddMovementInput(MovementDirection, Direction.X, true);
+
+		MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+		Pawn->AddMovementInput(MovementDirection, Direction.Y);
+
+		Pawn->SetActorRotation(MovementRotation);*/
+		//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
+		
+		/*Pawn->AddMovementInput(Direction, Direction.X);
+		Pawn->AddMovementInput(Direction, Direction.Y);*/
+
+		Pawn->SetActorLocation(desireLocation);
+	}
+	else
+	{
+		Pawn->SetActorLocation(NewLocation);
+	}
+		
+
+	
 
 	const Protocol::MoveState State = Pawn->GetDestMoveState();
 

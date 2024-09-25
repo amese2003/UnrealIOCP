@@ -90,7 +90,9 @@ void AR3Character::UpdatePosInfo()
 	CharacterInfo->mutable_pos_info()->set_x(Location.X);
 	CharacterInfo->mutable_pos_info()->set_y(Location.Y);
 	CharacterInfo->mutable_pos_info()->set_z(Location.Z);
-	CharacterInfo->mutable_pos_info()->set_yaw(GetControlRotation().Yaw);
+	CharacterInfo->mutable_pos_info()->set_rol(GetActorRotation().Roll);
+	CharacterInfo->mutable_pos_info()->set_pitch(GetActorRotation().Pitch);
+	CharacterInfo->mutable_pos_info()->set_yaw(GetActorRotation().Yaw);
 }
 
 PRAGMA_ENABLE_OPTIMIZATION

@@ -32,7 +32,6 @@ void UR3AssetManager::AddLoadedAsset(const UObject* Asset)
 	}
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 bool UR3AssetManager::TestClone()
 {
 	static bool bTest = ShouldLogAssetLoads();
@@ -97,4 +96,3 @@ void UR3AssetManager::StartInitialLoading()
 	FR3GameplayTags::InitializeNativeTags();
 
 }
-PRAGMA_ENABLE_OPTIMIZATION

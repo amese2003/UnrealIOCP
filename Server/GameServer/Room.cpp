@@ -34,10 +34,10 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 
 	// 랜덤 위치
 	player->_posInfo->set_object_id(player->_objectInfo->object_id());
-	player->_posInfo->set_x(Utils::GetRandom(0.f, 500.f));
-	player->_posInfo->set_y(Utils::GetRandom(0.f, 500.f));
-	player->_posInfo->set_z(100.f);
-	player->_posInfo->set_yaw(Utils::GetRandom(0.f, 100.f));
+	player->_posInfo->set_x(player->_posInfo->x());
+	player->_posInfo->set_y(player->_posInfo->y());
+	player->_posInfo->set_z(player->_posInfo->z());
+	player->_posInfo->set_yaw(player->_posInfo->yaw());
 
 	// 입장 사실을 신입 플레이어에게 알린다
 	{

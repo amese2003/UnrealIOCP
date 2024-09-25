@@ -27,7 +27,7 @@ public:
 	AR3PlayerState* GetR3PlayerState() const;
 	void SendMovement(float DeltaTime);
 	void UpdateSocketMovement(float DeltaTime);
-	
+
 
 	/**
 	* ProtoBuf

@@ -1,6 +1,6 @@
 #include "R3MultCharCreateionComponent.h"
 #include "R3GameMode.h"
-#include "Protocol.pb.h"
+
 #include "R3/Player/R3PlayerController.h"
 #include "R3/Player/R3SocketPlayerController.h"
 #include "R3/Character/R3PawnExtensionComponent.h"
@@ -13,7 +13,6 @@ UR3MultCharCreateionComponent::UR3MultCharCreateionComponent(const FObjectInitia
 {
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void UR3MultCharCreateionComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -115,4 +114,3 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosI
 void UR3MultCharCreateionComponent::OnExperienceLoaded(const UR3ExperienceDefinition* Experience)
 {
 }
-PRAGMA_ENABLE_OPTIMIZATION

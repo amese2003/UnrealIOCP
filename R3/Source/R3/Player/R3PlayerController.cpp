@@ -1,11 +1,14 @@
 #include "R3PlayerController.h"
 #include "R3PlayerState.h"
-#include "R3/R3.h"
+
 #include "R3/R3LogChannel.h"
 #include "R3/Character/R3Character.h"
 #include "R3/Character/R3HeroComponent.h"
 #include "R3/Camera/R3PlayerCameraManager.h"
 #include "R3/Network/NetworkManager.h"
+
+#include "R3/ClientPacketHandler.h"
+#include "R3/Network/SendBuffer.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3PlayerController)
 
 AR3PlayerController::AR3PlayerController(const FObjectInitializer& ObjectInitializer)
@@ -79,10 +82,17 @@ void AR3PlayerController::SendMovement(float DeltaTime)
 			Protocol::PosInfo* Info = MovePkt.mutable_info();
 			Protocol::ObjectInfo* objInfo = character->GetPlayerInfo();
 
+			FVector CharacterLocation = character->GetActorLocation();
+			FRotator CharacterRotation = character->GetActorRotation();
+
 			Info->CopyFrom(objInfo->pos_info());
-			Info->set_yaw(YawValue);
+
+
+			Info->set_x(CharacterLocation.X), Info->set_y(CharacterLocation.Y), Info->set_z(CharacterLocation.Z);
+			Info->set_rol(CharacterRotation.Roll), Info->set_pitch(CharacterRotation.Pitch), Info->set_yaw(CharacterRotation.Yaw);
 			Info->set_state(character->GetMoveState());
 		}
+
 
 		SEND_PACKET(MovePkt);
 	}
@@ -101,8 +111,8 @@ void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
 		return;
 
 	UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
-	heroComponent->Input_SocketMove(DeltaTime, LastDesiredInput);
+	heroComponent->Input_SocketMove(DeltaTime);
 
 	UE_LOG(LogR3, Error, TEXT("Object id : %d. x : %f"), character->GetPosInfo()->object_id(), character->GetPosInfo()->x());
-	
+
 }

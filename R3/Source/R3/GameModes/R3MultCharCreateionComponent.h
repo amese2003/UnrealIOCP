@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/GameStateComponent.h"
-
+#include "Protocol.pb.h"
 #include "R3MultCharCreateionComponent.generated.h"
 
 class UR3ExperienceDefinition;
