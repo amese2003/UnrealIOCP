@@ -101,32 +101,33 @@ inline bool CreatueType_Parse(
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<CreatueType>(
     CreatueType_descriptor(), name, value);
 }
-enum PlayerType : int {
+enum CreatureID : int {
   PLAYER_TYPE_NONE = 0,
   PLAYER_TYPE_KNIGHT = 1,
   PLAYER_TYPE_MAGE = 2,
   PLAYER_TYPE_ARCHER = 3,
-  PlayerType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  PlayerType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
+  MONSTER_TYPE_WOLF = 4,
+  CreatureID_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
+  CreatureID_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
 };
-bool PlayerType_IsValid(int value);
-constexpr PlayerType PlayerType_MIN = PLAYER_TYPE_NONE;
-constexpr PlayerType PlayerType_MAX = PLAYER_TYPE_ARCHER;
-constexpr int PlayerType_ARRAYSIZE = PlayerType_MAX + 1;
+bool CreatureID_IsValid(int value);
+constexpr CreatureID CreatureID_MIN = PLAYER_TYPE_NONE;
+constexpr CreatureID CreatureID_MAX = MONSTER_TYPE_WOLF;
+constexpr int CreatureID_ARRAYSIZE = CreatureID_MAX + 1;
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* PlayerType_descriptor();
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* CreatureID_descriptor();
 template<typename T>
-inline const std::string& PlayerType_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, PlayerType>::value ||
+inline const std::string& CreatureID_Name(T enum_t_value) {
+  static_assert(::std::is_same<T, CreatureID>::value ||
     ::std::is_integral<T>::value,
-    "Incorrect type passed to function PlayerType_Name.");
+    "Incorrect type passed to function CreatureID_Name.");
   return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
-    PlayerType_descriptor(), enum_t_value);
+    CreatureID_descriptor(), enum_t_value);
 }
-inline bool PlayerType_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, PlayerType* value) {
-  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<PlayerType>(
-    PlayerType_descriptor(), name, value);
+inline bool CreatureID_Parse(
+    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, CreatureID* value) {
+  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<CreatureID>(
+    CreatureID_descriptor(), name, value);
 }
 enum MoveState : int {
   MOVE_STATE_NONE = 0,
@@ -156,30 +157,6 @@ inline bool MoveState_Parse(
     ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MoveState* value) {
   return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MoveState>(
     MoveState_descriptor(), name, value);
-}
-enum MonsterType : int {
-  MONSTER_TYPE_NORMAL = 0,
-  MonsterType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::min(),
-  MonsterType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<int32_t>::max()
-};
-bool MonsterType_IsValid(int value);
-constexpr MonsterType MonsterType_MIN = MONSTER_TYPE_NORMAL;
-constexpr MonsterType MonsterType_MAX = MONSTER_TYPE_NORMAL;
-constexpr int MonsterType_ARRAYSIZE = MonsterType_MAX + 1;
-
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MonsterType_descriptor();
-template<typename T>
-inline const std::string& MonsterType_Name(T enum_t_value) {
-  static_assert(::std::is_same<T, MonsterType>::value ||
-    ::std::is_integral<T>::value,
-    "Incorrect type passed to function MonsterType_Name.");
-  return ::PROTOBUF_NAMESPACE_ID::internal::NameOfEnum(
-    MonsterType_descriptor(), enum_t_value);
-}
-inline bool MonsterType_Parse(
-    ::PROTOBUF_NAMESPACE_ID::ConstStringParam name, MonsterType* value) {
-  return ::PROTOBUF_NAMESPACE_ID::internal::ParseNamedEnum<MonsterType>(
-    MonsterType_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -213,20 +190,15 @@ template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::CreatueType>() {
   return ::Protocol::CreatueType_descriptor();
 }
-template <> struct is_proto_enum< ::Protocol::PlayerType> : ::std::true_type {};
+template <> struct is_proto_enum< ::Protocol::CreatureID> : ::std::true_type {};
 template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::PlayerType>() {
-  return ::Protocol::PlayerType_descriptor();
+inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::CreatureID>() {
+  return ::Protocol::CreatureID_descriptor();
 }
 template <> struct is_proto_enum< ::Protocol::MoveState> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::MoveState>() {
   return ::Protocol::MoveState_descriptor();
-}
-template <> struct is_proto_enum< ::Protocol::MonsterType> : ::std::true_type {};
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::Protocol::MonsterType>() {
-  return ::Protocol::MonsterType_descriptor();
 }
 
 PROTOBUF_NAMESPACE_CLOSE

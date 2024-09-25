@@ -22,7 +22,7 @@ namespace _pbi = _pb::internal;
 
 namespace Protocol {
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[5];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[4];
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_Enum_2eproto = nullptr;
 const uint32_t TableStruct_Enum_2eproto::offsets[1] = {};
 static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
@@ -35,18 +35,18 @@ const char descriptor_table_protodef_Enum_2eproto[] PROTOBUF_SECTION_VARIABLE(pr
   "CT_TYPE_ENV\020\003*q\n\013CreatueType\022\026\n\022CREATURE"
   "_TYPE_NONE\020\000\022\030\n\024CREATURE_TYPE_PLAYER\020\001\022\031"
   "\n\025CREATURE_TYPE_MONSTER\020\002\022\025\n\021CREATURE_TY"
-  "PE_NPC\020\003*h\n\nPlayerType\022\024\n\020PLAYER_TYPE_NO"
+  "PE_NPC\020\003*\177\n\nCreatureID\022\024\n\020PLAYER_TYPE_NO"
   "NE\020\000\022\026\n\022PLAYER_TYPE_KNIGHT\020\001\022\024\n\020PLAYER_T"
-  "YPE_MAGE\020\002\022\026\n\022PLAYER_TYPE_ARCHER\020\003*\211\001\n\tM"
-  "oveState\022\023\n\017MOVE_STATE_NONE\020\000\022\023\n\017MOVE_ST"
-  "ATE_IDLE\020\001\022\022\n\016MOVE_STATE_RUN\020\002\022\023\n\017MOVE_S"
-  "TATE_JUMP\020\003\022\023\n\017MOVE_STATE_DEAD\020\004\022\024\n\020MOVE"
-  "_STATE_SKILL\020\005*&\n\013MonsterType\022\027\n\023MONSTER"
-  "_TYPE_NORMAL\020\000b\006proto3"
+  "YPE_MAGE\020\002\022\026\n\022PLAYER_TYPE_ARCHER\020\003\022\025\n\021MO"
+  "NSTER_TYPE_WOLF\020\004*\211\001\n\tMoveState\022\023\n\017MOVE_"
+  "STATE_NONE\020\000\022\023\n\017MOVE_STATE_IDLE\020\001\022\022\n\016MOV"
+  "E_STATE_RUN\020\002\022\023\n\017MOVE_STATE_JUMP\020\003\022\023\n\017MO"
+  "VE_STATE_DEAD\020\004\022\024\n\020MOVE_STATE_SKILL\020\005b\006p"
+  "roto3"
   ;
 static ::_pbi::once_flag descriptor_table_Enum_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
-    false, false, 542, descriptor_table_protodef_Enum_2eproto,
+    false, false, 525, descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once, nullptr, 0, 0,
     schemas, file_default_instances, TableStruct_Enum_2eproto::offsets,
@@ -92,16 +92,17 @@ bool CreatueType_IsValid(int value) {
   }
 }
 
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* PlayerType_descriptor() {
+const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* CreatureID_descriptor() {
   ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
   return file_level_enum_descriptors_Enum_2eproto[2];
 }
-bool PlayerType_IsValid(int value) {
+bool CreatureID_IsValid(int value) {
   switch (value) {
     case 0:
     case 1:
     case 2:
     case 3:
+    case 4:
       return true;
     default:
       return false;
@@ -120,19 +121,6 @@ bool MoveState_IsValid(int value) {
     case 3:
     case 4:
     case 5:
-      return true;
-    default:
-      return false;
-  }
-}
-
-const ::PROTOBUF_NAMESPACE_ID::EnumDescriptor* MonsterType_descriptor() {
-  ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
-  return file_level_enum_descriptors_Enum_2eproto[4];
-}
-bool MonsterType_IsValid(int value) {
-  switch (value) {
-    case 0:
       return true;
     default:
       return false;

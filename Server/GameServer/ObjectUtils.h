@@ -1,11 +1,11 @@
 #pragma once
-
+#include "Enum.pb.h"
 
 class ObjectUtils
 {
 public:
 	static PlayerRef CreatePlayer(GameSessionRef session);
-	static MonsterRef CreateMonster(int monsterTypes);
+	static MonsterRef CreateMonster(Protocol::CreatureID  CreatureID);
 
 
 private:

@@ -1,5 +1,6 @@
 #pragma once
 #include "JobQueue.h"
+#include "Enum.pb.h"
 
 class R3CharacterBase;
 class GameSession;
@@ -22,12 +23,13 @@ public:
 
 	int GetObjectTypes(GameObjectRef object);
 
-
-
+	void BeginPlay();
 	void UpdateTick();
 
 	RoomRef GetRoomRef();
 
+
+	void SpawnMonster(Protocol::CreatureID CreatureID);
 
 private:
 	bool AddObject(GameObjectRef player);

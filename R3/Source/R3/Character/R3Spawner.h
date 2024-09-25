@@ -7,6 +7,8 @@
 
 class UR3CameraComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnMonsterDelegate);
+
 UCLASS()
 class R3_API AR3Spawner : public AModularCharacter
 {
@@ -14,4 +16,9 @@ class R3_API AR3Spawner : public AModularCharacter
 
 public:
 	AR3Spawner(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void SpawnMonster(int CreatureID);
 };

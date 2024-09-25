@@ -7,6 +7,8 @@ public:
 	GameObject();
 	virtual ~GameObject();
 
+	virtual void Update();
+
 	virtual void SetRoom(weak_ptr<Room> targetRoom);
 	weak_ptr<Room> GetRoom();
 

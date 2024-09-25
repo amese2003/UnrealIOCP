@@ -5,16 +5,23 @@
 
 class Monster : public Creature
 {
+	using Super = Creature;
+
 public:
 	Monster();
 	virtual ~Monster();
 
 
 
-	void Update();
-	void Move();
+	virtual void Update() override;
 
-public:
-	bool _busy = false;
+
+
+private:
+	void UpdateIdle();
+	void UpdateMove();
+	void UpdateSkill();
+	void UpdateDead();
+
 };
 

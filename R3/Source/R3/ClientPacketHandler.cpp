@@ -8,6 +8,7 @@
 #include "Network/NetworkManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "R3/GameModes/R3MultCharCreateionComponent.h"
+#include "R3/Character/R3Spawner.h"
 
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
@@ -68,11 +69,11 @@ bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt)
 {
 	if (AGameStateBase* GameState = Cast<AGameStateBase>(GWorld->GetGameState()))
 	{
+		UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>();
+
 		for (int32 i = 0; i < pkt.players_size(); i++)
 		{
 			const Protocol::ObjectInfo& Player = pkt.players(i);
-			UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>();
-
 
 			if (!Spanwer->ContainPlayer(Player.object_id()))
 				Spanwer->SpawnMultiplayerCharacter(Player);
@@ -110,3 +111,21 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 }
 
 
+bool Handle_S_MONSTERSPAWN(PacketSessionRef& session, Protocol::S_MONSTERSPAWN& pkt)
+{
+	if (AActor* FoundActor = UGameplayStatics::GetActorOfClass(GWorld, AR3Spawner::StaticClass()))
+	{
+
+
+	}
+
+	if (AGameStateBase* GameState = Cast<AGameStateBase>(GWorld->GetGameState()))
+	{
+		if (UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>())
+		{
+
+		}
+	}
+
+	return true;
+}

@@ -14,17 +14,34 @@ RoomRef GRoom = make_shared<Room>();
 Room::Room()
 {
 	//_gameMap = make_shared<GameMap>();
+
+	
 }
 
 Room::~Room()
 {
 }
 
+void Room::BeginPlay()
+{
+	for (int i = 0; i < 1; i++)
+		SpawnMonster(Protocol::CreatureID::MONSTER_TYPE_WOLF);
+}
+
 void Room::UpdateTick()
 {
+	for (pair<uint64, MonsterRef> monster : _monsters)
+	{
+		monster.second->Update();
+	}
+
 	//cout << "Update Room" << endl;
 	DoTimer(100, &Room::UpdateTick);
 }
+
+
+
+
 
 RoomRef Room::GetRoomRef()
 {
@@ -92,6 +109,20 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);
 		if (auto session = player->_session.lock())
 			session->Send(sendBuffer);
+	}
+
+	// 몬스터 스폰 패킷
+	{
+		Protocol::S_MONSTERSPAWN spawnPkt;
+
+		for (auto& item : _monsters)
+		{
+			Protocol::ObjectInfo* playerInfo = spawnPkt.add_monsters();
+			playerInfo->CopyFrom(*item.second->_objectInfo);
+		}
+
+		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);
+		Broadcast(sendBuffer);
 	}
 
 	return success;
@@ -218,20 +249,26 @@ bool Room::RemoveObject(uint64 objectId)
 	return true;
 }
 
-//void Room::SpawnMonster()
-//{
-//	MonsterRef monster = ObjectUtils::CreateMonster();
-//
-//	// 랜덤 위치
-//	monster->_playerInfo->set_x(Utils::GetRandom(0.f, 500.f));
-//	monster->_playerInfo->set_y(Utils::GetRandom(0.f, 500.f));
-//	monster->_playerInfo->set_z(50);
-//	monster->_playerInfo->set_yaw(Utils::GetRandom(0.f, 100.f));
-//
-//	const uint64 objectId =  monster->_playerInfo->object_id();
-//
-//	//monster->_room.store(GetRoomRef());
-//	_monsters[objectId] = monster;
-//
-//	//
-//}
+void Room::SpawnMonster(Protocol::CreatureID CreatureID)
+{
+	MonsterRef monster = ObjectUtils::CreateMonster(CreatureID);
+
+	/*PosInfo->set_x(Utils::GetRandom(0.f, 10.f));
+	posInfo->set_y(Utils::GetRandom(0.f, 10.f));
+	posInfo->set_z(100.f);*/
+	//// 랜덤 위치
+	monster->_posInfo->set_x(Utils::GetRandom(0.f, 10.f));
+	monster->_posInfo->set_y(Utils::GetRandom(0.f, 10.f));
+	monster->_posInfo->set_z(100.f);
+
+	monster->_room.store(GetRoomRef());
+	_monsters[monster->_objectInfo->object_id()] = monster;
+
+	Protocol::S_MONSTERSPAWN spawnPkt;
+
+	Protocol::ObjectInfo* playerInfo = spawnPkt.add_monsters();
+	playerInfo->CopyFrom(*monster->_objectInfo);
+
+	SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);
+	Broadcast(sendBuffer);
+}

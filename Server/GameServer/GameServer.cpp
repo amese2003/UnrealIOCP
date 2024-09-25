@@ -73,6 +73,7 @@ int main()
 		this_thread::sleep_for(1s);
 	}*/
 
+	GRoom->BeginPlay();
 	GRoom->DoAsync(&Room::UpdateTick);
 
 	while (true)

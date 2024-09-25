@@ -26,6 +26,7 @@ public:
 	bool ContainPlayer(uint64 object_id) { return SpawnedBotList.Contains(object_id); }
 	void UpdateCharacterMovement(const Protocol::PosInfo& Info);
 
+
 private:
 	void OnExperienceLoaded(const UR3ExperienceDefinition* Experience);
 

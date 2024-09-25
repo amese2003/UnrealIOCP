@@ -13,6 +13,10 @@ GameObject::~GameObject()
 	delete _objectInfo;
 }
 
+void GameObject::Update()
+{
+}
+
 void GameObject::SetRoom(weak_ptr<Room> targetRoom)
 {
 	_room.store(targetRoom);

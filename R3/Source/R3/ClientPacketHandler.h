@@ -23,6 +23,7 @@ enum : uint16
 	PKT_S_MOVE = 1009,
 	PKT_C_CHAT = 1010,
 	PKT_S_CHAT = 1011,
+	PKT_S_MONSTERSPAWN = 1012,
 };
 
 // Custom Handlers
@@ -34,6 +35,7 @@ bool Handle_S_SPAWN(PacketSessionRef& session, Protocol::S_SPAWN& pkt);
 bool Handle_S_DESPAWN(PacketSessionRef& session, Protocol::S_DESPAWN& pkt);
 bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt);
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt);
+bool Handle_S_MONSTERSPAWN(PacketSessionRef& session, Protocol::S_MONSTERSPAWN& pkt);
 
 class ClientPacketHandler
 {
@@ -49,6 +51,7 @@ public:
 		GPacketHandler[PKT_S_DESPAWN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_DESPAWN>(Handle_S_DESPAWN, session, buffer, len); };
 		GPacketHandler[PKT_S_MOVE] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MOVE>(Handle_S_MOVE, session, buffer, len); };
 		GPacketHandler[PKT_S_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
+		GPacketHandler[PKT_S_MONSTERSPAWN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_MONSTERSPAWN>(Handle_S_MONSTERSPAWN, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)

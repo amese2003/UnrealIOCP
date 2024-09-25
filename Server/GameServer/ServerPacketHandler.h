@@ -23,6 +23,7 @@ enum : uint16
 	PKT_S_MOVE = 1009,
 	PKT_C_CHAT = 1010,
 	PKT_S_CHAT = 1011,
+	PKT_S_MONSTERSPAWN = 1012,
 };
 
 // Custom Handlers
@@ -59,6 +60,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_DESPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_DESPAWN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_S_MOVE); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTERSPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTERSPAWN); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>
