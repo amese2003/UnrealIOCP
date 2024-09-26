@@ -8,6 +8,8 @@
 class UR3ExperienceDefinition;
 class AR3SocketPlayerController;
 class ACommonPlayerController;
+class AR3Character;
+class AR3Spawner;
 
 UCLASS(Blueprintable, Abstract)
 class UR3MultCharCreateionComponent : public UGameStateComponent
@@ -22,6 +24,8 @@ public:
 	*/
 	virtual void BeginPlay() override;
 	void SpawnMultiplayerCharacter(const Protocol::ObjectInfo& Info);
+	void SpawnMultiplayerMonster(const Protocol::ObjectInfo& Info);
+	void RegisterMonster(int object_id, AActor* MonsterActor);
 	void RestartPlayer(const Protocol::ObjectInfo& Info);
 	bool ContainPlayer(uint64 object_id) { return SpawnedBotList.Contains(object_id); }
 	void UpdateCharacterMovement(const Protocol::PosInfo& Info);
@@ -29,6 +33,7 @@ public:
 
 private:
 	void OnExperienceLoaded(const UR3ExperienceDefinition* Experience);
+	TObjectPtr<AR3Spawner> GetMonsterSpawner();
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = Gameplay)
@@ -37,7 +42,9 @@ public:
 	UPROPERTY(Transient)
 		TMap<uint64, TObjectPtr<ACommonPlayerController>> SpawnedBotList;
 
+	UPROPERTY(Transient)
+		TMap<uint64, TObjectPtr<AR3Character>> SpawnMonsterList;
 
-	
-
+	UPROPERTY()
+		TObjectPtr<AR3Spawner> MonsterSpawner;
 };

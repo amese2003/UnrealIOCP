@@ -20,5 +20,8 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void SpawnMonster(int CreatureID);
+		void SpawnMonster(int object_id, int CreatureID, FVector Location, FRotator Rotator);
+
+	UFUNCTION(BlueprintCallable)
+		void RegisterMonsterActor(int object_id, AActor* MonsterActor);
 };

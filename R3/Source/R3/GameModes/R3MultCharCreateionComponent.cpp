@@ -1,11 +1,12 @@
 #include "R3MultCharCreateionComponent.h"
 #include "R3GameMode.h"
-
 #include "R3/Player/R3PlayerController.h"
 #include "R3/Player/R3SocketPlayerController.h"
 #include "R3/Character/R3PawnExtensionComponent.h"
 #include "R3/GameModes/R3ExperienceManagerComponent.h"
 #include "R3/Character/R3Character.h"
+#include "R3/Character/R3Spawner.h"
+#include "kismet/GameplayStatics.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3MultCharCreateionComponent)
 
 UR3MultCharCreateionComponent::UR3MultCharCreateionComponent(const FObjectInitializer& ObjectInitializer)
@@ -55,6 +56,28 @@ void UR3MultCharCreateionComponent::SpawnMultiplayerCharacter(const Protocol::Ob
 		}
 
 		SpawnedBotList.Add(Info.object_id(), NewController);
+	}
+}
+
+void UR3MultCharCreateionComponent::SpawnMultiplayerMonster(const Protocol::ObjectInfo& Info)
+{
+	if (SpawnMonsterList.Contains(Info.object_id()) == false)
+	{
+		FVector SpawnLocation(Info.pos_info().x(), Info.pos_info().y(), Info.pos_info().z());
+		FRotator SpawnRotator(Info.pos_info().pitch(), Info.pos_info().yaw(), Info.pos_info().rol());
+
+		GetMonsterSpawner()->SpawnMonster(Info.object_id(), Info.creature_id(), SpawnLocation, SpawnRotator);
+	}
+}
+
+void UR3MultCharCreateionComponent::RegisterMonster(int object_id, AActor* MonsterActor)
+{
+	if (MonsterActor != nullptr)
+	{
+		if (AR3Character* Monster = Cast<AR3Character>(MonsterActor))
+		{
+			SpawnMonsterList.Add(object_id, Monster);
+		}
 	}
 }
 
@@ -113,4 +136,17 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosI
 
 void UR3MultCharCreateionComponent::OnExperienceLoaded(const UR3ExperienceDefinition* Experience)
 {
+}
+
+TObjectPtr<AR3Spawner> UR3MultCharCreateionComponent::GetMonsterSpawner()
+{
+	if (MonsterSpawner == nullptr)
+	{
+		if (AActor* Spawner = UGameplayStatics::GetActorOfClass(GetWorld(), AR3Spawner::StaticClass()))
+		{
+			MonsterSpawner = Cast<AR3Spawner>(Spawner);
+		}
+	}
+
+	return MonsterSpawner;
 }

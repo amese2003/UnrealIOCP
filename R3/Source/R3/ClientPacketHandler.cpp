@@ -113,17 +113,16 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 
 bool Handle_S_MONSTERSPAWN(PacketSessionRef& session, Protocol::S_MONSTERSPAWN& pkt)
 {
-	if (AActor* FoundActor = UGameplayStatics::GetActorOfClass(GWorld, AR3Spawner::StaticClass()))
-	{
-
-
-	}
 
 	if (AGameStateBase* GameState = Cast<AGameStateBase>(GWorld->GetGameState()))
 	{
 		if (UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>())
 		{
-
+			for (int32 i = 0; i < pkt.monsters_size(); i++)
+			{
+				const Protocol::ObjectInfo& monster = pkt.monsters(i);
+				Spanwer->SpawnMultiplayerMonster(monster);
+			}
 		}
 	}
 
