@@ -67,13 +67,38 @@ void Monster::UpdateMove()
 
 	FVector2D DestTarget = _room.load().lock()->_dummy->GetCellPos();
 
-	vector<FVector2D> path = _room.load().lock()->_gameMap->FindPath(CellPos, DestTarget);
+	vector<FVector2D> path;
+	
+	if (bTravel == false)
+		path = _room.load().lock()->_gameMap->FindPath(CellPos, DestTarget);
+	else
+		path = _room.load().lock()->_gameMap->FindPath(CellPos, startPosition);
 
 	cout << "test breakpoint" << endl;
 
 	if (path.size() > 1)
 		_room.load().lock()->_gameMap->ApplyMove(shared_from_this(), path[1]);
+	
+	int a = (startPosition - CellPos).SqrMagnitude();
 
+	if (a > 16 && bTravel == false)
+		bTravel = !bTravel;
+
+	if (a < 1 && bTravel == true)
+		bTravel = !bTravel;
+	
+	{
+		Protocol::S_MOVE movePkt;
+		{
+			Protocol::PosInfo* info = movePkt.mutable_info();
+			info->CopyFrom(*_posInfo);
+
+			movePkt.set_creature_type(Protocol::CREATURE_TYPE_MONSTER);
+		}
+
+		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(movePkt);
+		_room.load().lock()->Broadcast(sendBuffer);
+	}
 }
 
 void Monster::UpdateSkill()

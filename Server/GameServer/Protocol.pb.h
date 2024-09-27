@@ -1406,6 +1406,7 @@ class C_MOVE final :
 
   enum : int {
     kInfoFieldNumber = 1,
+    kCreatureTypeFieldNumber = 2,
   };
   // .Protocol.PosInfo info = 1;
   bool has_info() const;
@@ -1425,6 +1426,15 @@ class C_MOVE final :
       ::Protocol::PosInfo* info);
   ::Protocol::PosInfo* unsafe_arena_release_info();
 
+  // .Protocol.CreatueType creature_type = 2;
+  void clear_creature_type();
+  ::Protocol::CreatueType creature_type() const;
+  void set_creature_type(::Protocol::CreatueType value);
+  private:
+  ::Protocol::CreatueType _internal_creature_type() const;
+  void _internal_set_creature_type(::Protocol::CreatueType value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.C_MOVE)
  private:
   class _Internal;
@@ -1434,6 +1444,7 @@ class C_MOVE final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::Protocol::PosInfo* info_;
+    int creature_type_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1563,6 +1574,7 @@ class S_MOVE final :
 
   enum : int {
     kInfoFieldNumber = 1,
+    kCreatureTypeFieldNumber = 2,
   };
   // .Protocol.PosInfo info = 1;
   bool has_info() const;
@@ -1582,6 +1594,15 @@ class S_MOVE final :
       ::Protocol::PosInfo* info);
   ::Protocol::PosInfo* unsafe_arena_release_info();
 
+  // .Protocol.CreatueType creature_type = 2;
+  void clear_creature_type();
+  ::Protocol::CreatueType creature_type() const;
+  void set_creature_type(::Protocol::CreatueType value);
+  private:
+  ::Protocol::CreatueType _internal_creature_type() const;
+  void _internal_set_creature_type(::Protocol::CreatueType value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.S_MOVE)
  private:
   class _Internal;
@@ -1591,6 +1612,7 @@ class S_MOVE final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     ::Protocol::PosInfo* info_;
+    int creature_type_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -2501,6 +2523,26 @@ inline void C_MOVE::set_allocated_info(::Protocol::PosInfo* info) {
   // @@protoc_insertion_point(field_set_allocated:Protocol.C_MOVE.info)
 }
 
+// .Protocol.CreatueType creature_type = 2;
+inline void C_MOVE::clear_creature_type() {
+  _impl_.creature_type_ = 0;
+}
+inline ::Protocol::CreatueType C_MOVE::_internal_creature_type() const {
+  return static_cast< ::Protocol::CreatueType >(_impl_.creature_type_);
+}
+inline ::Protocol::CreatueType C_MOVE::creature_type() const {
+  // @@protoc_insertion_point(field_get:Protocol.C_MOVE.creature_type)
+  return _internal_creature_type();
+}
+inline void C_MOVE::_internal_set_creature_type(::Protocol::CreatueType value) {
+  
+  _impl_.creature_type_ = value;
+}
+inline void C_MOVE::set_creature_type(::Protocol::CreatueType value) {
+  _internal_set_creature_type(value);
+  // @@protoc_insertion_point(field_set:Protocol.C_MOVE.creature_type)
+}
+
 // -------------------------------------------------------------------
 
 // S_MOVE
@@ -2588,6 +2630,26 @@ inline void S_MOVE::set_allocated_info(::Protocol::PosInfo* info) {
   }
   _impl_.info_ = info;
   // @@protoc_insertion_point(field_set_allocated:Protocol.S_MOVE.info)
+}
+
+// .Protocol.CreatueType creature_type = 2;
+inline void S_MOVE::clear_creature_type() {
+  _impl_.creature_type_ = 0;
+}
+inline ::Protocol::CreatueType S_MOVE::_internal_creature_type() const {
+  return static_cast< ::Protocol::CreatueType >(_impl_.creature_type_);
+}
+inline ::Protocol::CreatueType S_MOVE::creature_type() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_MOVE.creature_type)
+  return _internal_creature_type();
+}
+inline void S_MOVE::_internal_set_creature_type(::Protocol::CreatueType value) {
+  
+  _impl_.creature_type_ = value;
+}
+inline void S_MOVE::set_creature_type(::Protocol::CreatueType value) {
+  _internal_set_creature_type(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_MOVE.creature_type)
 }
 
 // -------------------------------------------------------------------

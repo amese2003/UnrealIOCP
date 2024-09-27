@@ -47,7 +47,7 @@ void Room::UpdateTick()
 	}
 
 	cout << "Update Room" << endl;
-	DoTimer(1000, &Room::UpdateTick);
+	DoTimer(200, &Room::UpdateTick);
 }
 
 
@@ -185,6 +185,8 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 		{
 			Protocol::PosInfo* info = movePkt.mutable_info();
 			info->CopyFrom(pkt.info());
+
+			movePkt.set_creature_type(pkt.creature_type());
 		}
 
 		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(movePkt);
@@ -265,6 +267,8 @@ void Room::SpawnMonster(Protocol::CreatureID CreatureID)
 	monster->_room.store(GetRoomRef());
 
 	monster->SetActorLocation(SpawnLocation);
+	monster->startPosition = _gameMap->WorldPos2Node(SpawnLocation);
+
 	_monsters[monster->_objectInfo->object_id()] = monster;
 	monster->SetSpeed(monster->_objectInfo->speed());
 

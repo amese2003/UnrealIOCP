@@ -89,6 +89,9 @@ struct FVector2D
 		return FVector2D(_x - Other._x, _y - Other._y);
 	}
 
+	float Magnitude() { return sqrt(SqrMagnitude()); }
+	int SqrMagnitude() { return (_y * _y + _x * _x); }
+
 	int _x, _y;
 };
 

@@ -16,7 +16,7 @@ public:
 	virtual void Update() override;
 
 
-
+	FVector2D startPosition;
 private:
 	void UpdateIdle();
 	void UpdateMove();
@@ -33,6 +33,9 @@ private:
 	Protocol::MoveState MoveState = Protocol::MoveState::MOVE_STATE_IDLE;
 	weak_ptr<GameObject> TargetObject;
 
+	
 	FVector2D targetPosition;
+
+	bool bTravel = false;
 };
 

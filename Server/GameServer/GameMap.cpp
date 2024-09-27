@@ -142,7 +142,7 @@ vector<FVector2D> GameMap::FindPath(FVector2D start, FVector2D end)
 			if (closeList.contains(next))
 				continue;
 
-			if (abs(pos._y - pos._x) + abs(pos._x - next._y) > _maxDist)
+			if (abs(pos._y - next._y) + abs(pos._x - next._x) > _maxDist)
 				continue;
 
 			if (next._y != dest._y || next._x != dest._x)
@@ -216,7 +216,7 @@ int GameMap::GetDistance(Pos a, Pos b)
 
 Pos GameMap::FVector2dToPos(FVector2D cell)
 {
-	return Pos(cell._x, cell._y);
+	return Pos(cell._y, cell._x);
 }
 
 FVector2D GameMap::PosToFVector(Pos pos)

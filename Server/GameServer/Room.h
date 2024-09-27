@@ -33,7 +33,7 @@ public:
 	void SpawnMonster(Protocol::CreatureID CreatureID);
 
 	weak_ptr<GameObject> FindClosetPlayer(FVector2D CellPos, int searchCellDist);
-
+	void Broadcast(SendBufferRef sendBuffer, uint64 exceptId = 0);
 private:
 	bool AddObject(GameObjectRef player);
 	bool RemoveObject(uint64 objectId);
@@ -43,7 +43,7 @@ private:
 
 
 private:
-	void Broadcast(SendBufferRef sendBuffer, uint64 exceptId = 0);
+	
 
 
 public:
