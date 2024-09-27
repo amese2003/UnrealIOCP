@@ -4,6 +4,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "R3PawnExtensionComponent.h"
 #include "R3/Camera/R3CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3Character)
 
 AR3Character::AR3Character(const FObjectInitializer& ObjectInitializer)
@@ -58,6 +59,8 @@ void AR3Character::ResetCharacterInfo()
 void AR3Character::SetPlayerInfo(const Protocol::ObjectInfo& Info)
 {
 	CharacterInfo->CopyFrom(Info);
+
+	GetCharacterMovement()->MaxWalkSpeed = Info.speed();
 }
 
 void AR3Character::InitializePosition()

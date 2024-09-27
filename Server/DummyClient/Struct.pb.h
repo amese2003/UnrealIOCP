@@ -412,6 +412,7 @@ class ObjectInfo final :
     kObjectTypeFieldNumber = 2,
     kCreatureTypeFieldNumber = 4,
     kCreatureIdFieldNumber = 5,
+    kSpeedFieldNumber = 6,
   };
   // .Protocol.PosInfo pos_info = 3;
   bool has_pos_info() const;
@@ -467,6 +468,15 @@ class ObjectInfo final :
   void _internal_set_creature_id(::Protocol::CreatureID value);
   public:
 
+  // float speed = 6;
+  void clear_speed();
+  float speed() const;
+  void set_speed(float value);
+  private:
+  float _internal_speed() const;
+  void _internal_set_speed(float value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Protocol.ObjectInfo)
  private:
   class _Internal;
@@ -480,6 +490,7 @@ class ObjectInfo final :
     int object_type_;
     int creature_type_;
     int creature_id_;
+    float speed_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -828,6 +839,26 @@ inline void ObjectInfo::_internal_set_creature_id(::Protocol::CreatureID value) 
 inline void ObjectInfo::set_creature_id(::Protocol::CreatureID value) {
   _internal_set_creature_id(value);
   // @@protoc_insertion_point(field_set:Protocol.ObjectInfo.creature_id)
+}
+
+// float speed = 6;
+inline void ObjectInfo::clear_speed() {
+  _impl_.speed_ = 0;
+}
+inline float ObjectInfo::_internal_speed() const {
+  return _impl_.speed_;
+}
+inline float ObjectInfo::speed() const {
+  // @@protoc_insertion_point(field_get:Protocol.ObjectInfo.speed)
+  return _internal_speed();
+}
+inline void ObjectInfo::_internal_set_speed(float value) {
+  
+  _impl_.speed_ = value;
+}
+inline void ObjectInfo::set_speed(float value) {
+  _internal_set_speed(value);
+  // @@protoc_insertion_point(field_set:Protocol.ObjectInfo.speed)
 }
 
 #ifdef __GNUC__

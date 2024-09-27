@@ -66,7 +66,9 @@ void UR3MultCharCreateionComponent::SpawnMultiplayerMonster(const Protocol::Obje
 		FVector SpawnLocation(Info.pos_info().x(), Info.pos_info().y(), Info.pos_info().z());
 		FRotator SpawnRotator(Info.pos_info().pitch(), Info.pos_info().yaw(), Info.pos_info().rol());
 
-		GetMonsterSpawner()->SpawnMonster(Info.object_id(), Info.creature_id(), SpawnLocation, SpawnRotator);
+		float speed = Info.speed();
+
+		GetMonsterSpawner()->SpawnMonster(Info.object_id(), Info.creature_id(), SpawnLocation, SpawnRotator, speed);
 	}
 }
 
@@ -97,7 +99,6 @@ void UR3MultCharCreateionComponent::RestartPlayer(const Protocol::ObjectInfo& In
 			character->ResetCharacterInfo();
 			character->SetPlayerInfo(Info);
 			character->InitializePosition();
-
 
 			PC->SetControlPlayer();
 

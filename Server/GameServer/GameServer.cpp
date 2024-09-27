@@ -10,6 +10,8 @@
 #include <tchar.h>
 #include "Job.h"
 #include "GameMap.h"
+#include <queue>
+#include "GameMap.h"
 
 enum
 {
@@ -32,6 +34,7 @@ void DoWorkerJob(ServerServiceRef& service)
 		ThreadManager::DoGlobalQueueWork();
 	}
 }
+
 
 int main()
 {
@@ -72,6 +75,32 @@ int main()
 		GSessionManager.Broadcast(sendBuffer);
 		this_thread::sleep_for(1s);
 	}*/
+
+	/*priority_queue<PQNode> nodes;
+
+	set<PQNode> nodeset;
+
+	PQNode a;
+	a.F = 3;
+
+	PQNode b;
+	b.F = 5;
+
+	nodes.push(a);
+	nodes.push(b);
+
+	nodeset.insert(a);
+	nodeset.insert(b);
+
+
+	PQNode c;
+	c.F = 3;
+
+	if (nodeset.find(c) != nodeset.end())
+	{
+		cout << c.F << endl;
+	}*/
+	
 
 	GRoom->BeginPlay();
 	GRoom->DoAsync(&Room::UpdateTick);

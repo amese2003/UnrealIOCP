@@ -19,6 +19,7 @@ PlayerRef ObjectUtils::CreatePlayer(GameSessionRef session)
 	PlayerRef player = make_shared<Player>();
 	player->_objectInfo->set_object_id(newid);
 	player->_objectInfo->set_object_type(Protocol::OBJECT_TYPE_CREATURE);
+	player->_objectInfo->set_speed(1024.f);
 
 	player->_session = session;
 	session->_player.store(player);
@@ -37,7 +38,21 @@ MonsterRef ObjectUtils::CreateMonster(Protocol::CreatureID  CreatureID)
 	monster->_objectInfo->set_object_id(newid);
 	monster->_objectInfo->set_object_type(Protocol::OBJECT_TYPE_CREATURE);
 	monster->_objectInfo->set_creature_id(CreatureID);
+	monster->_objectInfo->set_speed(2048.f);
 
 	return monster;
 }
+
+MonsterRef ObjectUtils::CreateDummy()
+{
+	// [UNUSED(33)][TYPE(7)][ID(24)]
+	// [ ........ | ........ | ........ | ........ ]
+
+	MonsterRef monster = make_shared<Monster>();
+	monster->_objectInfo->set_object_type(Protocol::OBJECT_TYPE_CREATURE);
+	monster->_objectInfo->set_speed(2048.f);
+
+	return monster;
+}
+
 

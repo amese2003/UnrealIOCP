@@ -1,5 +1,6 @@
 #pragma once
 #include "JobQueue.h"
+#include "GameMap.h"
 #include "Enum.pb.h"
 
 class R3CharacterBase;
@@ -31,6 +32,8 @@ public:
 
 	void SpawnMonster(Protocol::CreatureID CreatureID);
 
+	weak_ptr<GameObject> FindClosetPlayer(FVector2D CellPos, int searchCellDist);
+
 private:
 	bool AddObject(GameObjectRef player);
 	bool RemoveObject(uint64 objectId);
@@ -48,6 +51,9 @@ public:
 
 	map<uint64, GameObjectRef> _players;
 	map<uint64, MonsterRef> _monsters;
+
+
+	MonsterRef _dummy;
 
 	int _zoneCells = 10;
 };

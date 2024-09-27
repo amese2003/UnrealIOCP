@@ -8,6 +8,7 @@
 #include "ObjectUtils.h"
 #include "GameSession.h"
 #include "GameObject.h"
+#include "GameMap.h"
 
 RoomRef GRoom = make_shared<Room>();
 
@@ -24,8 +25,15 @@ Room::~Room()
 
 void Room::BeginPlay()
 {
+	_gameMap = make_shared<GameMap>();
+
 	for (int i = 0; i < 1; i++)
 		SpawnMonster(Protocol::CreatureID::MONSTER_TYPE_WOLF);
+	
+
+	FVector SpawnLocation(Utils::GetRandom(100.f, 200.f), Utils::GetRandom(0.f, 10.f), 100.f);
+	_dummy = ObjectUtils::CreateDummy();
+	_dummy->SetActorLocation(SpawnLocation);
 }
 
 void Room::UpdateTick()
@@ -53,12 +61,12 @@ RoomRef Room::GetRoomRef()
 bool Room::HandleEnterPlayer(PlayerRef player)
 {
 	bool success = AddObject(player);
+	
+	FVector PlayerLocation = player->GetActorLocation();
 
 	// 랜덤 위치
 	player->_posInfo->set_object_id(player->_objectInfo->object_id());
-	player->_posInfo->set_x(player->_posInfo->x());
-	player->_posInfo->set_y(player->_posInfo->y());
-	player->_posInfo->set_z(player->_posInfo->z());
+	player->SetActorLocation(PlayerLocation);
 	player->_posInfo->set_yaw(player->_posInfo->yaw());
 
 	// 입장 사실을 신입 플레이어에게 알린다
@@ -71,14 +79,6 @@ bool Room::HandleEnterPlayer(PlayerRef player)
 		enterGamePkt.set_allocated_player(playerInfo);
 
 		int objectid = playerInfo->object_id();
-		//enterGamePkt.release_player();
-
-		
-		//for (auto& item : _monsters)
-		//{
-		//	Protocol::PlayerInfo* playerInfo = enterGamePkt.add_monsters();
-		//	playerInfo->CopyFrom(*item.second->_playerInfo);
-		//}
 
 		SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
 		if (auto session = player->_session.lock())
@@ -171,9 +171,10 @@ void Room::HandleMove(Protocol::C_MOVE pkt)
 
 	// 적용
 
-	// 에러에러에러에러에러에러에러엘
 	GameObjectRef& player = _players[objectId];
 	player->_posInfo->CopyFrom(pkt.info());
+
+	
 
 	// 이동 
 	{
@@ -257,11 +258,10 @@ void Room::SpawnMonster(Protocol::CreatureID CreatureID)
 	posInfo->set_y(Utils::GetRandom(0.f, 10.f));
 	posInfo->set_z(100.f);*/
 	//// 랜덤 위치
-	monster->_posInfo->set_x(Utils::GetRandom(0.f, 10.f));
-	monster->_posInfo->set_y(Utils::GetRandom(0.f, 10.f));
-	monster->_posInfo->set_z(100.f);
-
+	FVector SpawnLocation(Utils::GetRandom(0.f, 10.f), Utils::GetRandom(0.f, 10.f), 100.f);
 	monster->_room.store(GetRoomRef());
+
+	monster->SetActorLocation(SpawnLocation);
 	_monsters[monster->_objectInfo->object_id()] = monster;
 
 	Protocol::S_MONSTERSPAWN spawnPkt;
@@ -271,4 +271,58 @@ void Room::SpawnMonster(Protocol::CreatureID CreatureID)
 
 	SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);
 	Broadcast(sendBuffer);
+}
+
+weak_ptr<GameObject> Room::FindClosetPlayer(FVector2D CellPos, int searchCellDist)
+{
+	weak_ptr<GameObject> target;
+
+	int startX = CellPos._x - searchCellDist;
+	int startY = CellPos._y - searchCellDist;
+
+	int endX = CellPos._x + searchCellDist;
+	int endY = CellPos._y + searchCellDist;
+
+
+	vector<weak_ptr<GameObject>> FindTargets;
+	for (int x = startX; x < endX; x++)
+	{
+		for (int y = startY; y < endY; y++)
+		{
+			if (x < 0 || x > _gameMap->RowCount())
+				continue;
+
+			if (y < 0 || y > _gameMap->ColCount())
+				continue;
+
+			if (auto targetGameObject = _gameMap->GetGameObject(x, y))
+			{
+				FindTargets.push_back(targetGameObject);
+			}
+		}
+	}
+
+	auto sorta = [&](weak_ptr<GameObject> a, weak_ptr<GameObject> b) {
+		FVector2D aCell = a.lock().get()->GetCellPos();
+		FVector2D bCell = b.lock().get()->GetCellPos();
+
+		int leftDist = (aCell - CellPos).CellDistFromZero();
+		int rightDist = (bCell - CellPos).CellDistFromZero();
+
+		return leftDist - rightDist;
+	};
+
+	sort(FindTargets.begin(), FindTargets.end(), sorta);
+
+	for (auto FindTarget : FindTargets)
+	{
+		vector<FVector2D> path = _gameMap->FindPath(CellPos, FindTarget.lock()->GetCellPos());
+
+		if (path.size() < 2 || path.size() > searchCellDist)
+			continue;
+
+		return FindTarget;
+	}
+
+	return target;
 }

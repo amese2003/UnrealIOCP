@@ -6,6 +6,7 @@ class ObjectUtils
 public:
 	static PlayerRef CreatePlayer(GameSessionRef session);
 	static MonsterRef CreateMonster(Protocol::CreatureID  CreatureID);
+	static MonsterRef CreateDummy();
 
 
 private:
