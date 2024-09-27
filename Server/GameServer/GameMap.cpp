@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "GameObject.h"
 #include "GameMap.h"
 
 GameMap::GameMap()
@@ -46,13 +47,14 @@ FVector2D GameMap::WorldPos2Node(float x, float y)
 	return result;
 }
 
-FVector GameMap::Node2NodePos(int gridX, int gridZ, bool center)
+
+FVector GameMap::Node2NodePos(int gridX, int gridY, bool center)
 {
 	FVector result;
-	FVector gridLocation = FVector(_pivotPos.first, 0, _pivotPos.second);
+	FVector gridLocation = FVector(_pivotPos.first, _pivotPos.second, 100.f);
 
 	float rowPos = gridX * _tileSize;
-	float colPos = gridZ * _tileSize;
+	float colPos = gridY * _tileSize;
 	{
 		float sum = gridLocation._x;
 		float delta = rowPos + sum;
@@ -66,7 +68,7 @@ FVector GameMap::Node2NodePos(int gridX, int gridZ, bool center)
 	}
 
 	{
-		float sum = gridLocation._z;
+		float sum = gridLocation._y;
 		float delta = colPos + sum;
 
 		if (center)
@@ -74,7 +76,7 @@ FVector GameMap::Node2NodePos(int gridX, int gridZ, bool center)
 			delta = delta + (_tileSize / 2);
 		}
 		
-		result._z = delta;
+		result._y = delta;
 	}
 
 	return result;
@@ -104,13 +106,13 @@ vector<FVector2D> GameMap::FindPath(FVector2D start, FVector2D end)
 	map<Pos, int> openList;
 	map<Pos, Pos> parent;
 
-	priority_queue<PQNode> pq;
+	priority_queue<PQNode, vector<PQNode>, greater<PQNode>> pq;
 
 	Pos pos = FVector2dToPos(start);
 	Pos dest = FVector2dToPos(end);
 
 	openList[pos] = 10 * (abs(dest._y - pos._y) + abs(dest._x - pos._x));
-	pq.push(PQNode(abs(dest._y - pos._y) + abs(dest._x - pos._x), 0, pos._y, pos._x));
+	pq.push(PQNode((abs(dest._y - pos._y) + abs(dest._x - pos._x)), 0, pos._y, pos._x));
 	parent[pos] = pos;
 
 	while (pq.size() > 0)
@@ -130,6 +132,16 @@ vector<FVector2D> GameMap::FindPath(FVector2D start, FVector2D end)
 		{
 			Pos next = Pos(node._y + _deltaY[i], node._x + _deltaX[i]);
 
+			if (next._y < 0 || next._y > _colCount)
+				continue;
+
+			if (next._x < 0 || next._x > _rowCount)
+				continue;
+
+
+			if (closeList.contains(next))
+				continue;
+
 			if (abs(pos._y - pos._x) + abs(pos._x - next._y) > _maxDist)
 				continue;
 
@@ -139,28 +151,17 @@ vector<FVector2D> GameMap::FindPath(FVector2D start, FVector2D end)
 					continue;
 			}
 
-			if (closeList.contains(next))
-				continue;
-
 			int g = pqNode.G + GetDistance(node, next);
 			int h = GetDistance(next, dest);
-			int value = openList.count(next) ? openList[next] : 210000000;
 
-			if (value < g + h)
-				continue;
-
-
-			if (openList.find(next) == openList.end())
+			if (openList.find(next) == openList.end() || g + h < openList[next])
 			{
-				openList.insert({ next, g + h });
-			}
-
-			if (parent.find(next) != parent.end())
-			{
+				openList[next] = g + h;
 				parent[next] = node;
-			}
 
-			pq.push(PQNode(g + h, g, next._x, next._y));
+				pq.push(PQNode(g + h, g, next._y, next._x));
+
+			}
 		}
 	}
 
@@ -198,7 +199,7 @@ vector<FVector2D> GameMap::CalcPathFromParent(map<Pos, Pos> parent, Pos dest)
 	}
 
 	cells.push_back(PosToFVector(pos));
-
+	reverse(cells.begin(), cells.end());
 	return cells;
 }
 
@@ -228,6 +229,10 @@ void GameMap::SetGameObject(int x, int y, shared_ptr<GameObject> TargetObject)
 	_gameObjects[x][y] = TargetObject;
 }
 
-void GameMap::ApplyMove(shared_ptr<GameObject> TargetObject, FVector Location)
+void GameMap::ApplyMove(shared_ptr<GameObject> TargetObject, FVector2D Location)
 {
+	TargetObject->SetCellPos(Location);
+	FVector targetLocation = Node2NodePos(Location, false);
+
+	TargetObject->SetActorLocation(targetLocation, false);
 }

@@ -17,10 +17,12 @@ void Monster::Update()
 {
 	Super::Update();
 
-	if (_nextMoveTick > ::GetTickCount64())
+	ULONGLONG curtick = ::GetTickCount64();
+
+	if (_nextThinkTick > curtick)
 		return;
 
-	_nextMoveTick += ::GetTickCount64() + 200;
+	_nextThinkTick = curtick + 200;
 
 	switch (MoveState)
 	{
@@ -37,7 +39,7 @@ void Monster::Update()
 
 void Monster::UpdateIdle()
 {
-	/*auto tick = ::GetTickCount64();
+	auto tick = ::GetTickCount64();
 
 	if (_nextSearchTick > tick)
 		return;
@@ -51,21 +53,26 @@ void Monster::UpdateIdle()
 
 
 	TargetObject = target;
-	MoveState = Protocol::MoveState::MOVE_STATE_RUN;*/
+	MoveState = Protocol::MoveState::MOVE_STATE_RUN;
 }
 
 void Monster::UpdateMove()
 {
 	auto tick = ::GetTickCount64();
-	if (_nextMoveTick > tick)
+	if (_nextUpdateMoveTick > tick)
 		return;
 
 	int moveTick = (int)(1000 / Speed);
-	_nextMoveTick = tick + moveTick;
+	_nextUpdateMoveTick = tick + moveTick;
 
-	vector<FVector2D> path = _room.load().lock()->_gameMap->FindPath(CellPos, _room.load().lock()->_dummy->GetCellPos());
+	FVector2D DestTarget = _room.load().lock()->_dummy->GetCellPos();
 
+	vector<FVector2D> path = _room.load().lock()->_gameMap->FindPath(CellPos, DestTarget);
 
+	cout << "test breakpoint" << endl;
+
+	if (path.size() > 1)
+		_room.load().lock()->_gameMap->ApplyMove(shared_from_this(), path[1]);
 
 }
 

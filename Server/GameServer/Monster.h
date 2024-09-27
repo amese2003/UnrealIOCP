@@ -23,11 +23,12 @@ private:
 	void UpdateSkill();
 	void UpdateDead();
 
-	long _updateTick = 0.2;
-	long _nextMoveTick = 0.f;
-	long _nextSearchTick = 0.f;
+	ULONGLONG _updateTick = 0.2;
+	ULONGLONG _nextThinkTick = 0.f;
+	ULONGLONG _nextSearchTick = 0.f;
+	ULONGLONG _nextUpdateMoveTick = 0.f;
 
-	int _searchCellDist = 5;
+	int _searchCellDist = 15;
 
 	Protocol::MoveState MoveState = Protocol::MoveState::MOVE_STATE_IDLE;
 	weak_ptr<GameObject> TargetObject;

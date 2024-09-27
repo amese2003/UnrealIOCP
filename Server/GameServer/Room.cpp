@@ -31,9 +31,12 @@ void Room::BeginPlay()
 		SpawnMonster(Protocol::CreatureID::MONSTER_TYPE_WOLF);
 	
 
-	FVector SpawnLocation(Utils::GetRandom(100.f, 200.f), Utils::GetRandom(0.f, 10.f), 100.f);
+	FVector SpawnLocation(Utils::GetRandom(30.f, 50.f), Utils::GetRandom(30.f, 50.f), 100.f);
 	_dummy = ObjectUtils::CreateDummy();
+	_dummy->_room = static_pointer_cast<Room>(shared_from_this());
 	_dummy->SetActorLocation(SpawnLocation);
+	_dummy->SetCellPos(SpawnLocation);
+	
 }
 
 void Room::UpdateTick()
@@ -43,8 +46,8 @@ void Room::UpdateTick()
 		monster.second->Update();
 	}
 
-	//cout << "Update Room" << endl;
-	DoTimer(100, &Room::UpdateTick);
+	cout << "Update Room" << endl;
+	DoTimer(1000, &Room::UpdateTick);
 }
 
 
@@ -258,11 +261,12 @@ void Room::SpawnMonster(Protocol::CreatureID CreatureID)
 	posInfo->set_y(Utils::GetRandom(0.f, 10.f));
 	posInfo->set_z(100.f);*/
 	//// ·£´ý À§Ä¡
-	FVector SpawnLocation(Utils::GetRandom(0.f, 10.f), Utils::GetRandom(0.f, 10.f), 100.f);
+	FVector SpawnLocation(Utils::GetRandom(90.f, 100.f), Utils::GetRandom(90.f, 100.f), 100.f);
 	monster->_room.store(GetRoomRef());
 
 	monster->SetActorLocation(SpawnLocation);
 	_monsters[monster->_objectInfo->object_id()] = monster;
+	monster->SetSpeed(monster->_objectInfo->speed());
 
 	Protocol::S_MONSTERSPAWN spawnPkt;
 

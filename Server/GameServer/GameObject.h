@@ -13,6 +13,7 @@ public:
 	virtual void BroadcastMove();
 
 	weak_ptr<Room> GetRoom();
+	void SetSpeed(float speed);
 
 	/**
 	*  CellPos
@@ -26,7 +27,7 @@ public:
 	/**
 	*  Actual Pos
 	*/
-	void SetActorLocation(FVector Location);
+	void SetActorLocation(FVector Location, bool WithCell = true);
 	FVector GetActorLocation();
 
 public:

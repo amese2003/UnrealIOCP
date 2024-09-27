@@ -23,6 +23,7 @@ struct Pos
 		return _y * _y + _x * _x < other._y* other._y + other._x * other._x;
 	}
 
+
 	int _y;
 	int _x;
 };
@@ -138,7 +139,8 @@ public:
 	
 	FVector2D WorldPos2Node(FVector Location);
 	FVector2D WorldPos2Node(float x, float z);
-	FVector Node2NodePos(int gridX, int gridZ, bool center = true);
+	FVector Node2NodePos(FVector2D pos, bool center = true) { return Node2NodePos(pos._x, pos._y, center); }
+	FVector Node2NodePos(int gridX, int gridY, bool center = true);
 	FVector Node2NodePos(FVector node, bool center) { return Node2NodePos(node._x, node._z, center); }
 
 	float GetGridWidth() { return _rowCount * _tileSize; }
@@ -159,7 +161,7 @@ public:
 	void SetGameObject(int x, int y, shared_ptr<GameObject> TargetObject);
 	shared_ptr<GameObject> GetGameObject(int x, int y) { return _gameObjects[x][y]; }
 
-	void ApplyMove(shared_ptr<GameObject> TargetObject, FVector Location);
+	void ApplyMove(shared_ptr<GameObject> TargetObject, FVector2D Location);
 
 private:
 	int _rowCount = 10000, _colCount = 10000;
@@ -170,8 +172,8 @@ private:
 	vector<vector<FNode>> _nodes;
 	vector<vector<shared_ptr<GameObject>>> _gameObjects;
 
-	vector<int> _deltaY = { 1, -1, 0, 0 };
-	vector<int> _deltaX = { 0, 0, -1, 1 };
+	vector<int> _deltaY = { -1, 0, 1, 0, -1, -1, 1, 1 };
+	vector<int> _deltaX = { 0, -1, 0, 1, -1, 1, -1, 1 };
 	vector<int> _cost = { 10, 10, 10, 10 };
-	int _maxDist = 10;
+	int _maxDist = 5;
 };

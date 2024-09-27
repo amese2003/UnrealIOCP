@@ -37,6 +37,11 @@ weak_ptr<Room> GameObject::GetRoom()
 	return weak_ptr<Room>();
 }
 
+void GameObject::SetSpeed(float speed)
+{
+	Speed = speed;
+}
+
 void GameObject::SetCellPos(FVector Location)
 {
 	CellPos = _room.load().lock()->_gameMap->WorldPos2Node(Location);
@@ -62,13 +67,13 @@ FVector2D GameObject::GetCellPos()
 	return CellPos;
 }
 
-void GameObject::SetActorLocation(FVector Location)
+void GameObject::SetActorLocation(FVector Location, bool WithCell)
 {
 	_posInfo->set_x(Location._x);
 	_posInfo->set_y(Location._y);
 	_posInfo->set_z(Location._z);
 
-	if (_room.load().lock() != nullptr)
+	if (WithCell == true && _room.load().lock() != nullptr)
 	{
 		FVector2D currentNode = _room.load().lock()->_gameMap->WorldPos2Node(Location);
 		CellPos = currentNode;
