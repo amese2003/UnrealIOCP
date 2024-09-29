@@ -12,4 +12,15 @@ public:
 	ACommonPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void ReceivedPlayer() override;
+
+
+	
+
+
+
+
+
+
+
+	
 };

@@ -100,7 +100,7 @@ void UR3MultCharCreateionComponent::RestartPlayer(const Protocol::ObjectInfo& In
 			character->SetPlayerInfo(Info);
 			character->InitializePosition();
 
-			PC->SetControlPlayer();
+			/*PC->SetControlPlayer();*/
 
 			SpawnedBotList.Add(Info.object_id(), PC);
 		}

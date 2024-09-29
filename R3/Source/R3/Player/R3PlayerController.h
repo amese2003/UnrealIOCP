@@ -2,12 +2,13 @@
 
 #include "CommonPlayerController.h"
 #include "R3/Network/Protocol.pb.h"
+#include "R3BaseController.h"
 #include "R3PlayerController.generated.h"
 
 class AR3PlayerState;
 
 UCLASS()
-class AR3PlayerController : public ACommonPlayerController
+class AR3PlayerController : public AR3BaseController
 {
 	GENERATED_BODY()
 
@@ -29,19 +30,5 @@ public:
 	void UpdateSocketMovement(float DeltaTime);
 
 
-	/**
-	* ProtoBuf
-	*/
-	void SetMovementInput(const FVector2d& Input) { MovementInput = Input; }
-	void SetYaw(float yaw) { YawValue = yaw; }
-	void SetControlPlayer() { ControlPlayer = true; }
-	FVector2d& GetMovementInput() { return MovementInput; }
-private:
-	bool ControlPlayer = false;
-	FVector2D MovementInput;
-	FVector2D LastDesiredInput;
-	float YawValue = 0.f;
-
-	const float MOVE_PACKET_SEND_DELAY = 0.2f;
-	float MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+	
 };

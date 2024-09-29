@@ -334,7 +334,7 @@ void UR3HeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 	{
 		const FVector2D Value = InputActionValue.Get<FVector2D>();
 		const FRotator MovementRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
-		Controller->SetMovementInput(Value);
+		//Controller->SetMovementInput(Value);
 
 		if (Value.X != 0.f)
 		{
@@ -356,11 +356,11 @@ void UR3HeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 
 		// Cache
 		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			/*const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
 
 			const FVector Location = Pawn->GetActorLocation();
 			FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, MovementDirection);
-			Controller->SetYaw(Rotator.Yaw);
+			Controller->SetYaw(Rotator.Yaw);*/
 		}
 	}
 }

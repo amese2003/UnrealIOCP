@@ -40,11 +40,6 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
 	if (AGameStateBase* GameState = Cast<AGameStateBase>(GWorld->GetGameState()))
 	{
-		//GameInstance->HandleSpawn(pkt);
-		//GameInstance->HandleMonsterSpawn(pkt);
-
-		// 새로운 플레이어 스폰
-
 		const Protocol::ObjectInfo& Player = pkt.player();
 
 		UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>();
