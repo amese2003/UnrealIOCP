@@ -27,8 +27,8 @@ void Room::BeginPlay()
 {
 	_gameMap = make_shared<GameMap>();
 
-	for (int i = 0; i < 1; i++)
-		SpawnMonster(Protocol::CreatureID::MONSTER_TYPE_WOLF);
+	//for (int i = 0; i < 1; i++)
+		//SpawnMonster(Protocol::CreatureID::MONSTER_TYPE_WOLF);
 	
 
 	FVector SpawnLocation(Utils::GetRandom(30.f, 50.f), Utils::GetRandom(30.f, 50.f), 100.f);

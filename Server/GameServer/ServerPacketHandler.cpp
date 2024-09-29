@@ -28,7 +28,7 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 		Protocol::PosInfo* posInfo = player->mutable_pos_info();
 		posInfo->set_x(Utils::GetRandom(0.f, 10.f));
 		posInfo->set_y(Utils::GetRandom(0.f, 10.f));
-		posInfo->set_z(100.f);
+		posInfo->set_z(110.f);
 		posInfo->set_yaw(Utils::GetRandom(0.f, 45.f));
 	}
 

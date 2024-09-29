@@ -12,7 +12,6 @@ GameObject::GameObject()
 GameObject::~GameObject()
 {
 	delete _objectInfo;
-	delete _posInfo;
 }
 
 void GameObject::Update()
