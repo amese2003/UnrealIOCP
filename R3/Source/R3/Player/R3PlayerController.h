@@ -25,10 +25,22 @@ public:
 	/**
 	*  Member Methods
 	*/
+	virtual void UpdateSocketMovement(float DeltaTime);
 	AR3PlayerState* GetR3PlayerState() const;
-	void SendMovement(float DeltaTime);
-	void UpdateSocketMovement(float DeltaTime);
+
+	virtual void UpdateIdle();
+	virtual void MoveToNextPos(float deltaTime) override;
+	virtual void CheckUpdateFlag(float deltaTime) override;
+
+	void SetDirInput(FVector Input);
+	FVector GetDirInput();
+	void SetMoveKeyPress(bool Input);
 
 
-	
+private:
+	bool bMoveKeyPress = false;
+	FVector InputDir = FVector::Zero();
+
+	float MOVE_PACKET_SEND_DELAY = 0.2f;
+	float MovePacketSendTimer = 0.2f;
 };

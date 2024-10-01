@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CommonPlayerController.h"
+#include "R3BaseController.h"
 #include "R3SocketPlayerController.generated.h"
 
 class AR3PlayerState;
 
 UCLASS()
-class AR3SocketPlayerController : public ACommonPlayerController
+class AR3SocketPlayerController : public AR3BaseController
 {
 	GENERATED_BODY()
 

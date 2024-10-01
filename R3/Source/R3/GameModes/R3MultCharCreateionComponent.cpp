@@ -7,6 +7,8 @@
 #include "R3/Character/R3Character.h"
 #include "R3/Character/R3Spawner.h"
 #include "kismet/GameplayStatics.h"
+#include "R3/Player/R3MonsterController.h"
+#include "R3/R3LogChannel.h"
 #include UE_INLINE_GENERATED_CPP_BY_NAME(R3MultCharCreateionComponent)
 
 UR3MultCharCreateionComponent::UR3MultCharCreateionComponent(const FObjectInitializer& ObjectInitializer)
@@ -49,13 +51,12 @@ void UR3MultCharCreateionComponent::SpawnMultiplayerCharacter(const Protocol::Ob
 				PawnExtComponent->CheckDefaultInitialization();
 			}
 
-			AR3Character* character = NewController->GetPawn<AR3Character>();
-			character->ResetCharacterInfo();
-			character->SetPlayerInfo(Info);
-			character->InitializePosition();
-		}
+			NewController->ResetCharacterInfo();
+			NewController->SetPlayerInfo(Info);
+			NewController->InitializePosition();
 
-		SpawnedBotList.Add(Info.object_id(), NewController);
+			SpawnedBotList.Add(Info.object_id(), NewController);
+		}
 	}
 }
 
@@ -78,7 +79,16 @@ void UR3MultCharCreateionComponent::RegisterMonster(int object_id, AActor* Monst
 	{
 		if (AR3Character* Monster = Cast<AR3Character>(MonsterActor))
 		{
-			SpawnMonsterList.Add(object_id, Monster);
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnInfo.OverrideLevel = GetComponentLevel();
+			SpawnInfo.ObjectFlags |= RF_Transient;
+			AR3MonsterController* NewController = GetWorld()->SpawnActor<AR3MonsterController>(MultiControllerClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnInfo);
+
+			NewController->Possess(Monster);
+
+			if (NewController->GetPawn())
+				SpawnMonsterList.Add(object_id, NewController);
 		}
 	}
 }
@@ -95,24 +105,63 @@ void UR3MultCharCreateionComponent::RestartPlayer(const Protocol::ObjectInfo& In
 		{
 			currentGameMode->RestartPlayer(PC);
 
-			AR3Character* character = PC->GetPawn<AR3Character>();
-			character->ResetCharacterInfo();
-			character->SetPlayerInfo(Info);
-			character->InitializePosition();
+			PC->ResetCharacterInfo();
+			PC->SetPlayerInfo(Info);
 
-			/*PC->SetControlPlayer();*/
+			Protocol::PosInfo pos = Info.pos_info();
+			PC->SetPosInfo(pos);
+			PC->InitializePosition();
 
 			SpawnedBotList.Add(Info.object_id(), PC);
 		}
 	}
 }
 
-void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosInfo& Info)
+void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::S_MOVE& Info)
 {
-	if (!SpawnedBotList.Contains(Info.object_id()))
-		return;
+	Protocol::PosInfo pos = Info.info();
 
-	AR3PlayerController* PC = Cast<AR3PlayerController>(SpawnedBotList[Info.object_id()]);
+	if (Info.creature_type() == Protocol::CREATURE_TYPE_PLAYER)
+	{
+		if (!SpawnedBotList.Contains(Info.info().object_id()))
+			return;
+
+		AR3SocketPlayerController* SPC = Cast<AR3SocketPlayerController>(SpawnedBotList[Info.info().object_id()]);
+
+		UE_LOG(LogR3, Log, TEXT("player_id : %d, player_state : %d"), pos.object_id(), pos.state());
+
+		
+
+		if (SPC)
+		{
+			FVector test = FVector(pos.x(), pos.y(), pos.z());
+
+			DrawDebugSphere(GetWorld(), SPC->GetPawn()->GetActorLocation(), 200, 26, FColor(181, 0, 0), true, -1, 0, 2);
+			DrawDebugSphere(GetWorld(), test, 200, 26, FColor(181, 0, 0), true, -1, 0, 2);
+
+			SPC->SetPosInfo(pos);
+			return;
+		}
+
+		AR3PlayerController* PC = Cast<AR3PlayerController>(SpawnedBotList[Info.info().object_id()]);
+
+		if (PC)
+		{
+			PC->SetPosInfo(pos);
+		}
+	}
+
+	if (Info.creature_type() == Protocol::CREATURE_TYPE_MONSTER)
+	{
+		if (!SpawnMonsterList.Contains(Info.info().object_id()))
+			return;
+
+
+	}
+
+	
+
+	/*AR3PlayerController* PC = Cast<AR3PlayerController>(SpawnedBotList[Info.object_id()]);
 
 	if (PC)
 	{
@@ -132,7 +181,7 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::PosI
 			character->SetPosInfo(Info);
 		}
 		
-	}
+	}*/
 }
 
 void UR3MultCharCreateionComponent::OnExperienceLoaded(const UR3ExperienceDefinition* Experience)

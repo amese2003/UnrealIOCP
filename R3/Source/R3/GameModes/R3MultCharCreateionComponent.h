@@ -10,6 +10,9 @@ class AR3SocketPlayerController;
 class ACommonPlayerController;
 class AR3Character;
 class AR3Spawner;
+class SpawnMonsterList;
+
+class AR3MonsterController;
 
 UCLASS(Blueprintable, Abstract)
 class UR3MultCharCreateionComponent : public UGameStateComponent
@@ -28,7 +31,7 @@ public:
 	void RegisterMonster(int object_id, AActor* MonsterActor);
 	void RestartPlayer(const Protocol::ObjectInfo& Info);
 	bool ContainPlayer(uint64 object_id) { return SpawnedBotList.Contains(object_id); }
-	void UpdateCharacterMovement(const Protocol::PosInfo& Info);
+	void UpdateCharacterMovement(const Protocol::S_MOVE& Info);
 
 
 private:
@@ -43,7 +46,7 @@ public:
 		TMap<uint64, TObjectPtr<ACommonPlayerController>> SpawnedBotList;
 
 	UPROPERTY(Transient)
-		TMap<uint64, TObjectPtr<AR3Character>> SpawnMonsterList;
+		TMap<uint64, TObjectPtr<AR3MonsterController>> SpawnMonsterList;
 
 	UPROPERTY()
 		TObjectPtr<AR3Spawner> MonsterSpawner;

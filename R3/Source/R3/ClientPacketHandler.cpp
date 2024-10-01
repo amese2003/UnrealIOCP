@@ -99,7 +99,7 @@ bool Handle_S_MOVE(PacketSessionRef& session, Protocol::S_MOVE& pkt)
 	if (AGameStateBase* GameState = Cast<AGameStateBase>(GWorld->GetGameState()))
 	{
 		UR3MultCharCreateionComponent* Spanwer = GameState->FindComponentByClass<UR3MultCharCreateionComponent>();
-		Spanwer->UpdateCharacterMovement(pkt.info());
+		Spanwer->UpdateCharacterMovement(pkt);
 	}
 
 	return true;

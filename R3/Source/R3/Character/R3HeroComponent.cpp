@@ -24,7 +24,7 @@ const FName UR3HeroComponent::NAME_ActorFeatureName("Hero");
 /** InputConfig의 GameFeatureAction 활성화 ExtensionEvent  이름 */
 const FName UR3HeroComponent::NAME_BindInputsNow("BindInputsNow");
 
-
+PRAGMA_DISABLE_OPTIMIZATION
 UR3HeroComponent::UR3HeroComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -278,6 +278,7 @@ void UR3HeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 						IC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::InputAbilityInputTagReleased, BindHandles);
 					}
 					IC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);;
+					IC->BindNativeAction(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Completed, this, &ThisClass::Input_MoveEnd, false);;
 					IC->BindNativeAction(InputConfig, GameplayTags.InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 				}
 			}
@@ -328,40 +329,60 @@ bool UR3HeroComponent::IsReadyToBindInputs() const
 void UR3HeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+	
+	AR3PlayerController* Controller = Pawn ? Cast<AR3PlayerController>(Pawn->GetController()) : nullptr;
+	const FRotator MovementRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+
+	if (Controller->IsNetworking() == false)
+	{
+		if (Controller)
+		{
+			//Controller->SetMovementInput(Value);
+
+			if (Value.X != 0.f)
+			{
+				// Left/Right -> X 값에 들어감
+				// MovementDirection은 현재 카메라의 RightVector를 의미함 (World-Space)
+				const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+
+				// AddMovement를 한번 보자
+				//	- 내부적으로 MovementDirection * Value.X를 MovementComponent에 적용(더하기) 해준다
+				Pawn->AddMovementInput(MovementDirection, Value.X);
+			}
+
+			if (Value.Y != 0.f) // 앞서 우리는 Foward 적용을 위해 swizzle input modifier를 사용했다.
+			{
+				// 앞의 Left/Right와 마찬가지로, Foward/BackWard를 적용한다
+				const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+				Pawn->AddMovementInput(MovementDirection, Value.Y);
+			}
+
+		}
+	}
+	else
+	{
+
+		const FVector MovementDirectionX = MovementRotation.RotateVector(FVector::RightVector);
+		const FVector MovementDirectionY = MovementRotation.RotateVector(FVector::ForwardVector);
+
+		FVector Dir = MovementDirectionX * Value.X + MovementDirectionY * Value.Y;
+		Dir.Z = 0;
+		Dir.GetSafeNormal();
+		Controller->SetDirInput(Dir);
+		Controller->SetMoveKeyPress(true);
+	}
+}
+
+void UR3HeroComponent::Input_MoveEnd(const FInputActionValue& InputActionValue)
+{
+	APawn* Pawn = GetPawn<APawn>();
 	AR3PlayerController* Controller = Pawn ? Cast<AR3PlayerController>(Pawn->GetController()) : nullptr;
 
-	if (Controller)
+	if (Controller->IsNetworking() == true)
 	{
-		const FVector2D Value = InputActionValue.Get<FVector2D>();
-		const FRotator MovementRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
-		//Controller->SetMovementInput(Value);
-
-		if (Value.X != 0.f)
-		{
-			// Left/Right -> X 값에 들어감
-			// MovementDirection은 현재 카메라의 RightVector를 의미함 (World-Space)
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-
-			// AddMovement를 한번 보자
-			//	- 내부적으로 MovementDirection * Value.X를 MovementComponent에 적용(더하기) 해준다
-			Pawn->AddMovementInput(MovementDirection, Value.X);
-		}
-
-		if (Value.Y != 0.f) // 앞서 우리는 Foward 적용을 위해 swizzle input modifier를 사용했다.
-		{
-			// 앞의 Left/Right와 마찬가지로, Foward/BackWard를 적용한다
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			Pawn->AddMovementInput(MovementDirection, Value.Y);
-		}
-
-		// Cache
-		{
-			/*const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-
-			const FVector Location = Pawn->GetActorLocation();
-			FRotator Rotator = UKismetMathLibrary::FindLookAtRotation(Location, MovementDirection);
-			Controller->SetYaw(Rotator.Yaw);*/
-		}
+		Controller->SetDirInput(FVector::Zero());
+		Controller->SetMoveKeyPress(false);
 	}
 }
 
@@ -399,60 +420,61 @@ void UR3HeroComponent::InputAbilityInputTagReleased(FGameplayTag InputTag)
 
 void UR3HeroComponent::Input_SocketMove(float deltaTime)
 {
-	AR3Character* Pawn = GetPawn<AR3Character>();
-	FVector PawnLocation = Pawn->GetActorLocation();
+	//AR3Character* Pawn = GetPawn<AR3Character>();
+	//FVector PawnLocation = Pawn->GetActorLocation();
 
-	const FRotator MovementRotation(0.f, Pawn->GetPosInfo()->yaw(), 0.f);
+	//const FRotator MovementRotation(0.f, Pawn->GetPosInfo()->yaw(), 0.f);
 
-	const FVector NewLocation(Pawn->GetPosInfo()->x(), Pawn->GetPosInfo()->y(), Pawn->GetPosInfo()->z());
+	//const FVector NewLocation(Pawn->GetPosInfo()->x(), Pawn->GetPosInfo()->y(), Pawn->GetPosInfo()->z());
 
-	FVector Direction = (NewLocation - PawnLocation);
-	float DistanceQuad = Direction.SizeSquared();
-	Direction = Direction.GetSafeNormal();
+	//FVector Direction = (NewLocation - PawnLocation);
+	//float DistanceQuad = Direction.SizeSquared();
+	//Direction = Direction.GetSafeNormal();
 
-	FVector desireLocation = PawnLocation + (Direction * Pawn->GetCharacterMovement()->GetMaxSpeed() * deltaTime);
+	//FVector desireLocation = PawnLocation + (Direction * Pawn->GetCharacterMovement()->GetMaxSpeed() * deltaTime);
 
-	Pawn->SetActorRotation(MovementRotation);
-	if (DistanceQuad > 100.f)
-	{
-		/*FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-		Pawn->AddMovementInput(MovementDirection, Direction.X, true);
+	//Pawn->SetActorRotation(MovementRotation);
+	//if (DistanceQuad > 100.f)
+	//{
+	//	/*FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+	//	Pawn->AddMovementInput(MovementDirection, Direction.X, true);
 
-		MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-		Pawn->AddMovementInput(MovementDirection, Direction.Y);
+	//	MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+	//	Pawn->AddMovementInput(MovementDirection, Direction.Y);
 
-		Pawn->SetActorRotation(MovementRotation);*/
-		//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
-		
-		/*Pawn->AddMovementInput(Direction, Direction.X);
-		Pawn->AddMovementInput(Direction, Direction.Y);*/
+	//	Pawn->SetActorRotation(MovementRotation);*/
+	//	//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
+	//	
+	//	/*Pawn->AddMovementInput(Direction, Direction.X);
+	//	Pawn->AddMovementInput(Direction, Direction.Y);*/
 
-		Pawn->SetActorLocation(desireLocation);
-	}
-	else
-	{
-		Pawn->SetActorLocation(NewLocation);
-	}
-		
+	//	Pawn->SetActorLocation(desireLocation);
+	//}
+	//else
+	//{
+	//	Pawn->SetActorLocation(NewLocation);
+	//}
+	//	
 
-	
+	//
 
-	const Protocol::MoveState State = Pawn->GetDestMoveState();
+	//const Protocol::MoveState State = Pawn->GetDestMoveState();
 
 
-	if (State == Protocol::MOVE_STATE_RUN)
-	{
-		/*FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-		Pawn->AddMovementInput(MovementDirection, Value.X);
+	//if (State == Protocol::MOVE_STATE_RUN)
+	//{
+	//	/*FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+	//	Pawn->AddMovementInput(MovementDirection, Value.X);
 
-		MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-		Pawn->AddMovementInput(MovementDirection, Value.Y);*/
+	//	MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+	//	Pawn->AddMovementInput(MovementDirection, Value.Y);*/
 
-		//Pawn->SetActorRotation(MovementRotation);
-		//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
-		
-	}
-	else
-	{
-	}
+	//	//Pawn->SetActorRotation(MovementRotation);
+	//	//Pawn->AddMovementInput(Pawn->GetActorForwardVector());
+	//	
+	//}
+	//else
+	//{
+	//}
 }
+PRAGMA_ENABLE_OPTIMIZATION

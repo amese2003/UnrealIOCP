@@ -25,7 +25,6 @@ void AR3PlayerController::PlayerTick(float DeltaTime)
 
 	if (GameInstance && GameInstance->GetNetworkManager()->Connected())
 	{
-		SendMovement(DeltaTime);
 		UpdateSocketMovement(DeltaTime);
 	}
 }
@@ -35,84 +34,146 @@ void AR3PlayerController::PostProcessInput(const float DeltaTime, const bool bGa
 	Super::PostProcessInput(DeltaTime, bGamePaused);
 }
 
+void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
+{
+	Super::UpdateSocketMovement(DeltaTime);
+}
+
 AR3PlayerState* AR3PlayerController::GetR3PlayerState() const
 {
 	return CastChecked<AR3PlayerState>(PlayerState, ECastCheckedType::NullAllowed);
 }
 
-
-void AR3PlayerController::SendMovement(float DeltaTime)
+void AR3PlayerController::UpdateIdle()
 {
-	if (!ControlPlayer)
-		return;
-
-	// Send 판정
-	bool ForceSendPacket = false;
-	AR3Character* character = GetPawn<AR3Character>();
-
-	if (!character)
-		return;
-
-	//UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
-
-	FVector2d& DesiredInput = MovementInput;
-
-	if (LastDesiredInput != DesiredInput)
+	if (bMoveKeyPress)
 	{
-		ForceSendPacket = true;
-		LastDesiredInput = DesiredInput;
+		SetMoveState(Protocol::MOVE_STATE_RUN);
+		return;
+	}
+}
+
+void AR3PlayerController::MoveToNextPos(float deltaTime)
+{
+	if (bMoveKeyPress == false)
+	{
+		CurrentState = Protocol::MOVE_STATE_IDLE;
+		CheckUpdateFlag(deltaTime);
+
+		UE_LOG(LogR3, Log, TEXT("Moving State End : %d"), CurrentState);
+		return;
 	}
 
-	// State 정보
-	if (DesiredInput == FVector2D::Zero())
-		character->SetMoveState(Protocol::MOVE_STATE_IDLE);
-	else
-		character->SetMoveState(Protocol::MOVE_STATE_RUN);
 
-	MovePacketSendTimer -= DeltaTime;
+	FVector destPos = GetPawn()->GetActorLocation() + InputDir * Speed;
+	PosInfo->set_x(destPos.X);
+	PosInfo->set_y(destPos.Y);
+	PosInfo->set_z(destPos.Z);
 
-	if (MovePacketSendTimer <= 0 || ForceSendPacket)
+	UE_LOG(LogR3, Log, TEXT("Moving State : %d"), CurrentState);
+	CheckUpdateFlag(deltaTime);
+}
+
+void AR3PlayerController::CheckUpdateFlag(float deltaTime)
+{
+	MovePacketSendTimer -= deltaTime;
+
+	if (bUpdated)
 	{
+		if (MovePacketSendTimer )
+
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
 		Protocol::C_MOVE MovePkt;
 
-		// 현재 위치 정보
-		{
-			Protocol::PosInfo* Info = MovePkt.mutable_info();
-			Protocol::ObjectInfo* objInfo = character->GetPlayerInfo();
-
-			FVector CharacterLocation = character->GetActorLocation();
-			FRotator CharacterRotation = character->GetActorRotation();
-
-			Info->CopyFrom(objInfo->pos_info());
-
-
-			Info->set_x(CharacterLocation.X), Info->set_y(CharacterLocation.Y), Info->set_z(CharacterLocation.Z);
-			Info->set_rol(CharacterRotation.Roll), Info->set_pitch(CharacterRotation.Pitch), Info->set_yaw(CharacterRotation.Yaw);
-			Info->set_state(character->GetMoveState());
-		}
-
+		Protocol::PosInfo* Info = MovePkt.mutable_info();
+		MovePkt.set_creature_type(Protocol::CREATURE_TYPE_PLAYER);
+		UE_LOG(LogR3, Log, TEXT("Send State : %d"), CurrentState);
+		Info->CopyFrom(*PosInfo);
+		Info->set_state(CurrentState);
+		
 
 		SEND_PACKET(MovePkt);
-	}
+		bUpdated = false;
+	}	
+
 }
 
-void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
+void AR3PlayerController::SetDirInput(FVector Input)
 {
-	AR3Character* character = GetPawn<AR3Character>();
-
-	if (!character)
-		return;
-
-	character->UpdatePosInfo();
-
-	if (ControlPlayer)
-		return;
-
-	UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
-	heroComponent->Input_SocketMove(DeltaTime);
-
-	UE_LOG(LogR3, Error, TEXT("Object id : %d. x : %f"), character->GetPosInfo()->object_id(), character->GetPosInfo()->x());
-
+	InputDir = Input;
+	bUpdated = true;
 }
+
+FVector AR3PlayerController::GetDirInput()
+{
+	return InputDir;
+}
+
+void AR3PlayerController::SetMoveKeyPress(bool Input)
+{
+	bMoveKeyPress = Input;
+}
+
+
+//void AR3PlayerController::SendMovement(float DeltaTime)
+//{
+//	//if (!ControlPlayer)
+//	//	return;
+//
+//	//// Send 판정
+//	//bool ForceSendPacket = false;
+//	//AR3Character* character = GetPawn<AR3Character>();
+//
+//	//if (!character)
+//	//	return;
+//
+//	////UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
+//
+//	//FVector2d& DesiredInput = MovementInput;
+//
+//	//if (LastDesiredInput != DesiredInput)
+//	//{
+//	//	ForceSendPacket = true;
+//	//	LastDesiredInput = DesiredInput;
+//	//}
+//
+//	//// State 정보
+//	//if (DesiredInput == FVector2D::Zero())
+//	//	character->SetMoveState(Protocol::MOVE_STATE_IDLE);
+//	//else
+//	//	character->SetMoveState(Protocol::MOVE_STATE_RUN);
+//
+//	//MovePacketSendTimer -= DeltaTime;
+//
+//	//if (MovePacketSendTimer <= 0 || ForceSendPacket)
+//	//{
+//	//	MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
+//
+//	//	Protocol::C_MOVE MovePkt;
+//
+//	//	// 현재 위치 정보
+//	//	{
+//	//		Protocol::PosInfo* Info = MovePkt.mutable_info();
+//	//		Protocol::ObjectInfo* objInfo = character->GetPlayerInfo();
+//
+//	//		FVector CharacterLocation = character->GetActorLocation();
+//	//		FRotator CharacterRotation = character->GetActorRotation();
+//
+//	//		Info->CopyFrom(objInfo->pos_info());
+//
+//
+//	//		Info->set_x(CharacterLocation.X), Info->set_y(CharacterLocation.Y), Info->set_z(CharacterLocation.Z);
+//	//		Info->set_rol(CharacterRotation.Roll), Info->set_pitch(CharacterRotation.Pitch), Info->set_yaw(CharacterRotation.Yaw);
+//	//		Info->set_state(character->GetMoveState());
+//	//	}
+//
+//
+//	//	SEND_PACKET(MovePkt);
+//	//}
+//}
+
+//void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
+//{
+//
+//}

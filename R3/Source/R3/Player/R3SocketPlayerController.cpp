@@ -15,30 +15,9 @@ AR3SocketPlayerController::AR3SocketPlayerController(const FObjectInitializer& O
 void AR3SocketPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
-	UpdateSocketMovement(DeltaTime);
 }
 
 void AR3SocketPlayerController::UpdateSocketMovement(float DeltaTime)
 {
-	AR3Character* character = GetPawn<AR3Character>();
-
-	if (!character)
-		return;
-
-	character->UpdatePosInfo();
-
-	FVector InputDir(character->GetPosInfo()->x(), character->GetPosInfo()->y(), character->GetPosInfo()->z());
-	InputDir = InputDir - character->GetActorLocation();
-	InputDir = InputDir.GetSafeNormal2D();
-	FVector2D desire(InputDir.X, InputDir.Y);
-
-
-	UR3HeroComponent* heroComponent = character->GetComponentByClass<UR3HeroComponent>();
-	heroComponent->Input_SocketMove(DeltaTime);
-
-	UE_LOG(LogR3, Error, TEXT("Object id : %d"), character->GetPosInfo()->object_id());
-	UE_LOG(LogR3, Error, TEXT("x: %f, y: %f"), character->GetPosInfo()->x(), character->GetPosInfo()->y());
-	UE_LOG(LogR3, Error, TEXT("Input x: %f, Input y: %f"), desire.X, desire.Y);
 
 }

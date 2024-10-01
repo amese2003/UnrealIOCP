@@ -63,6 +63,7 @@ public:
 	bool IsReadyToBindInputs() const;
 
 	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_MoveEnd(const FInputActionValue& InputActionValue);
 	void Input_LookMouse(const FInputActionValue& InputActionValue);
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 	void InputAbilityInputTagReleased(FGameplayTag InputTag);
