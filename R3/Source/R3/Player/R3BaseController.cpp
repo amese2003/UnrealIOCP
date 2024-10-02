@@ -70,6 +70,8 @@ void AR3BaseController::UpdateMoving(float DeltaTime)
 
 	FVector curPos = GetPawn()->GetActorLocation();
 
+	UE_LOG(LogR3, Log, TEXT("Update Object_id : %d"), CharacterInfo->object_id());
+
 	FVector2D rowColPos = FVector2D(destPos.X, destPos.Y);
 	FVector2D rowColCur = FVector2D(curPos.X, curPos.Y);
 
@@ -79,17 +81,16 @@ void AR3BaseController::UpdateMoving(float DeltaTime)
 
 	if (dist < Speed * DeltaTime)
 	{
-		GetPawn()->SetActorLocation(destPos); 
+		GetPawn()->SetActorLocation(destPos);
 		MoveToNextPos(DeltaTime);
 	}
 	else
 	{
-		FVector nextPos = curPos + moveDir.Normalize() * Speed * DeltaTime;
-		GetPawn()->SetActorLocation(destPos);
+		FVector Res = FVector(moveDir.X, moveDir.Y, 0.f).GetSafeNormal() * Speed;
+		FVector nextPos = curPos + Res  * DeltaTime;
+		GetPawn()->SetActorLocation(nextPos);
 		CurrentState = Protocol::MOVE_STATE_RUN;
 	}
-
-	
 }
 
 void AR3BaseController::UpdateSkill()
@@ -125,6 +126,7 @@ void AR3BaseController::SetPlayerInfo(const Protocol::ObjectInfo& Info)
 	CharacterInfo->CopyFrom(Info);
 	CurrentState = Info.pos_info().state();
 	Speed = Info.speed();
+	PosInfo->CopyFrom(Info.pos_info());
 
 	bUpdated = true;
 }
@@ -139,6 +141,27 @@ void AR3BaseController::SetPosInfo(Protocol::PosInfo& Info)
 	}
 		
 	bUpdated = true;
+}
+
+void AR3BaseController::SyncPosition(float DeltaTime)
+{
+	FVector destPos = FVector(PosInfo->x(), PosInfo->y(), PosInfo->z());
+
+	FVector curPos = GetPawn()->GetActorLocation();
+
+	UE_LOG(LogR3, Log, TEXT("Update Object_id : %d"), CharacterInfo->object_id());
+
+	FVector2D rowColPos = FVector2D(destPos.X, destPos.Y);
+	FVector2D rowColCur = FVector2D(curPos.X, curPos.Y);
+
+	FVector2D moveDir = rowColPos - rowColCur;
+
+	if (moveDir.SizeSquared() < 5.f)
+		return;
+
+	FVector Res = FVector(moveDir.X, moveDir.Y, 0.f).GetSafeNormal() * Speed;
+	FVector nextPos = curPos + Res * DeltaTime;
+	GetPawn()->SetActorLocation(nextPos);
 }
 
 PRAGMA_ENABLE_OPTIMIZATION

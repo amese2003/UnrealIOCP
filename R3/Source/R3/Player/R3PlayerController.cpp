@@ -34,6 +34,8 @@ void AR3PlayerController::PostProcessInput(const float DeltaTime, const bool bGa
 	Super::PostProcessInput(DeltaTime, bGamePaused);
 }
 
+
+
 void AR3PlayerController::UpdateSocketMovement(float DeltaTime)
 {
 	Super::UpdateSocketMovement(DeltaTime);
@@ -58,7 +60,7 @@ void AR3PlayerController::MoveToNextPos(float deltaTime)
 	if (bMoveKeyPress == false)
 	{
 		CurrentState = Protocol::MOVE_STATE_IDLE;
-		CheckUpdateFlag(deltaTime);
+		CheckUpdateFlag(deltaTime, true);
 
 		UE_LOG(LogR3, Log, TEXT("Moving State End : %d"), CurrentState);
 		return;
@@ -74,14 +76,12 @@ void AR3PlayerController::MoveToNextPos(float deltaTime)
 	CheckUpdateFlag(deltaTime);
 }
 
-void AR3PlayerController::CheckUpdateFlag(float deltaTime)
+void AR3PlayerController::CheckUpdateFlag(float deltaTime, bool ForceUpdate)
 {
 	MovePacketSendTimer -= deltaTime;
 
-	if (bUpdated)
+	if ((bUpdated && MovePacketSendTimer < 0.f) || ForceUpdate)
 	{
-		if (MovePacketSendTimer )
-
 		MovePacketSendTimer = MOVE_PACKET_SEND_DELAY;
 
 		Protocol::C_MOVE MovePkt;
@@ -91,16 +91,15 @@ void AR3PlayerController::CheckUpdateFlag(float deltaTime)
 		UE_LOG(LogR3, Log, TEXT("Send State : %d"), CurrentState);
 		Info->CopyFrom(*PosInfo);
 		Info->set_state(CurrentState);
-		
 
-		SEND_PACKET(MovePkt);
 		bUpdated = false;
-	}	
-
+		SEND_PACKET(MovePkt);
+	}
 }
 
 void AR3PlayerController::SetDirInput(FVector Input)
 {
+	LastInputDir = InputDir;
 	InputDir = Input;
 	bUpdated = true;
 }

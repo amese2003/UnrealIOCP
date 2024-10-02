@@ -41,8 +41,18 @@ void UR3MultCharCreateionComponent::SpawnMultiplayerCharacter(const Protocol::Ob
 		AR3GameMode* GameMode = GetGameMode<AR3GameMode>();
 		check(GameMode);
 
-		GameMode->DispatchPostLogin(NewController);
-		GameMode->RestartPlayer(NewController);
+		/*GameMode->DispatchPostLogin(NewController);
+		GameMode->RestartPlayer(NewController);*/
+
+		Protocol::PosInfo pos = Info.pos_info();
+		FVector NewLoc = FVector(pos.x(), pos.y(), pos.z());
+
+		FActorSpawnParameters pawnInfo;
+		pawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		pawnInfo.OverrideLevel = GetComponentLevel();
+		pawnInfo.ObjectFlags |= RF_Transient;
+		APawn* newPawn = GetWorld()->SpawnActor<APawn>(GameMode->DefaultPawnClass, NewLoc, FRotator::ZeroRotator, pawnInfo);
+		NewController->Possess(newPawn);
 
 		if (NewController->GetPawn() != nullptr)
 		{
@@ -51,12 +61,28 @@ void UR3MultCharCreateionComponent::SpawnMultiplayerCharacter(const Protocol::Ob
 				PawnExtComponent->CheckDefaultInitialization();
 			}
 
-			NewController->ResetCharacterInfo();
-			NewController->SetPlayerInfo(Info);
-			NewController->InitializePosition();
-
-			SpawnedBotList.Add(Info.object_id(), NewController);
 		}
+
+		NewController->ResetCharacterInfo();
+		NewController->SetPlayerInfo(Info);
+		NewController->InitializePosition();
+
+		SpawnedBotList.Add(Info.object_id(), NewController);
+		//if (NewController->GetPawn() != nullptr)
+		//{
+		//	if (UR3PawnExtensionComponent* PawnExtComponent = NewController->GetPawn()->FindComponentByClass<UR3PawnExtensionComponent>())
+		//	{
+		//		PawnExtComponent->CheckDefaultInitialization();
+		//	}
+
+		//	
+
+		//	//NewController->ResetCharacterInfo();
+		//	//NewController->SetPlayerInfo(Info);
+		//	//NewController->InitializePosition();
+
+		//	//SpawnedBotList.Add(Info.object_id(), NewController);
+		//}
 	}
 }
 
@@ -103,14 +129,64 @@ void UR3MultCharCreateionComponent::RestartPlayer(const Protocol::ObjectInfo& In
 	{
 		if (currentGameMode->PlayerCanRestart(PC))
 		{
+			Protocol::PosInfo pos = Info.pos_info();
+			FVector NewLoc = FVector(pos.x(), pos.y(), pos.z());
+
 			currentGameMode->RestartPlayer(PC);
 
 			PC->ResetCharacterInfo();
-			PC->SetPlayerInfo(Info);
+			PC->InitializePosition();
 
-			Protocol::PosInfo pos = Info.pos_info();
+			/*FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			SpawnInfo.OverrideLevel = GetComponentLevel();
+			SpawnInfo.ObjectFlags |= RF_Transient;
+			APawn* newPawn = GetWorld()->SpawnActor<APawn>(currentGameMode->DefaultPawnClass, NewLoc, FRotator::ZeroRotator, SpawnInfo);
+
+			if (PC->GetPawn() != nullptr)
+			{
+				if (UR3PawnExtensionComponent* PawnExtComponent = PC->GetPawn()->FindComponentByClass<UR3PawnExtensionComponent>())
+				{
+					PawnExtComponent->CheckDefaultInitialization();
+				}
+			}*/
+
+
+			//PC->Possess(newPawn);
+			PC->ResetCharacterInfo();
+			PC->SetPlayerInfo(Info);
 			PC->SetPosInfo(pos);
 			PC->InitializePosition();
+			//
+			//
+
+			//FTransform transform;
+			//transform.SetLocation(NewLoc);
+			//transform.SetScale3D(FVector::One());
+
+			//
+			
+
+			//PC->Possess(newPawn);
+
+			//
+
+			//PC->ResetCharacterInfo();
+			//PC->SetPlayerInfo(Info);
+
+			//PC->SetPosInfo(pos);
+			//PC->InitializePosition();
+
+			//
+
+			///*currentGameMode->RestartPlayer(PC);
+
+			//PC->ResetCharacterInfo();
+			//PC->SetPlayerInfo(Info);
+
+			//Protocol::PosInfo pos = Info.pos_info();
+			//PC->SetPosInfo(pos);
+			//PC->InitializePosition();*/
 
 			SpawnedBotList.Add(Info.object_id(), PC);
 		}
@@ -136,10 +212,11 @@ void UR3MultCharCreateionComponent::UpdateCharacterMovement(const Protocol::S_MO
 		{
 			FVector test = FVector(pos.x(), pos.y(), pos.z());
 
-			DrawDebugSphere(GetWorld(), SPC->GetPawn()->GetActorLocation(), 200, 26, FColor(181, 0, 0), true, -1, 0, 2);
-			DrawDebugSphere(GetWorld(), test, 200, 26, FColor(181, 0, 0), true, -1, 0, 2);
+			/*DrawDebugSphere(GetWorld(), SPC->GetPawn()->GetActorLocation(), 200, 26, FColor(0, 0, 180), true, -1, 0, 2);
+			DrawDebugSphere(GetWorld(), test, 200, 26, FColor(181, 0, 0), true, -1, 0, 2);*/
 
 			SPC->SetPosInfo(pos);
+			//SPC->GetPawn()->SetActorLocation(test);
 			return;
 		}
 

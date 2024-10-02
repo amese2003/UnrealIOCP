@@ -35,13 +35,15 @@ public:
 
 	Protocol::ObjectInfo* GetPlayerInfo() { return CharacterInfo; }
 	virtual void MoveToNextPos(float deltaTime) {};
-	virtual void CheckUpdateFlag(float deltaTime) {};
+	virtual void CheckUpdateFlag(float deltaTime, bool ForceUpdate = false) {};
 
 	
 
 	void SetMoveState(Protocol::MoveState State) { CurrentState = State; bUpdated = true; }
 	Protocol::MoveState GetMoveState() { return PosInfo->state(); }
 	Protocol::PosInfo* GetPosInfo() { return PosInfo; }
+
+	void SyncPosition(float DeltaTime);
 
 
 

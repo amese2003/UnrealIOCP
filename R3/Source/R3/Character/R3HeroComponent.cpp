@@ -383,6 +383,7 @@ void UR3HeroComponent::Input_MoveEnd(const FInputActionValue& InputActionValue)
 	{
 		Controller->SetDirInput(FVector::Zero());
 		Controller->SetMoveKeyPress(false);
+		Controller->CheckUpdateFlag(0.1f, true);
 	}
 }
 

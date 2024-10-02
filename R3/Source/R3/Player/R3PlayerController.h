@@ -30,7 +30,7 @@ public:
 
 	virtual void UpdateIdle();
 	virtual void MoveToNextPos(float deltaTime) override;
-	virtual void CheckUpdateFlag(float deltaTime) override;
+	virtual void CheckUpdateFlag(float deltaTime, bool ForceUpdate = false) override;
 
 	void SetDirInput(FVector Input);
 	FVector GetDirInput();
@@ -40,7 +40,8 @@ public:
 private:
 	bool bMoveKeyPress = false;
 	FVector InputDir = FVector::Zero();
+	FVector LastInputDir = FVector::Zero();
 
-	float MOVE_PACKET_SEND_DELAY = 0.2f;
-	float MovePacketSendTimer = 0.2f;
+	float MOVE_PACKET_SEND_DELAY = 0.02f;
+	float MovePacketSendTimer = 0.02f;
 };

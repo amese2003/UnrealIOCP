@@ -13,14 +13,14 @@ class AR3SocketPlayerController : public AR3BaseController
 public:
 	AR3SocketPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	virtual void UpdateSocketMovement(float DeltaTime) override;
 
-	virtual void PlayerTick(float DeltaTime) override;
+
+	virtual void UpdateMoving(float deltaTime) override;
 
 	/**
 	*  Member Methods
 	*/
-
-	void UpdateSocketMovement(float DeltaTime);
 
 
 	/**

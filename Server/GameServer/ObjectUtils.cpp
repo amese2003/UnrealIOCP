@@ -22,8 +22,8 @@ PlayerRef ObjectUtils::CreatePlayer(GameSessionRef session)
 	player->_objectInfo->set_speed(20.f);
 	player->_posInfo->set_state(Protocol::MOVE_STATE_IDLE);
 
-	player->_posInfo->set_x(Utils::GetRandom(50.f, 100.f));
-	player->_posInfo->set_y(Utils::GetRandom(50.f, 100.f));
+	player->_posInfo->set_x(Utils::GetRandom(10.f, 100.f));
+	player->_posInfo->set_y(Utils::GetRandom(10.f, 100.f));
 	player->_posInfo->set_z(100.f);
 
 	player->_session = session;
@@ -43,7 +43,7 @@ MonsterRef ObjectUtils::CreateMonster(Protocol::CreatureID  CreatureID)
 	monster->_objectInfo->set_object_id(newid);
 	monster->_objectInfo->set_object_type(Protocol::OBJECT_TYPE_CREATURE);
 	monster->_objectInfo->set_creature_id(CreatureID);
-	monster->_objectInfo->set_speed(20.f);
+	monster->_objectInfo->set_speed(100.f);
 	monster->_posInfo->set_state(Protocol::MOVE_STATE_IDLE);
 
 	return monster;
@@ -56,7 +56,7 @@ MonsterRef ObjectUtils::CreateDummy()
 
 	MonsterRef monster = make_shared<Monster>();
 	monster->_objectInfo->set_object_type(Protocol::OBJECT_TYPE_CREATURE);
-	monster->_objectInfo->set_speed(20.f);
+	monster->_objectInfo->set_speed(100.f);
 
 	return monster;
 }
